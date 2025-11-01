@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Siddhivinayak Creation | Premium Men's Clothing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="traditional-border">
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-vest logo-icon"></i>
+                <span class="logo-text">Shree Siddhivinayak Creation</span>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link" data-section="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-section="products">Products</a></li>
+                    <li><a href="#" class="nav-link" data-section="about">About</a></li>
+                    <li><a href="#" class="nav-link" data-section="contact">Contact</a></li>
+                    <li><a href="#" class="nav-link" data-section="admin-login">Admin</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="cart-icon" id="cart-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="mobile-toggle" id="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Sections -->
+    <main>
+        <!-- Home Section -->
+        <section id="home-section" class="hero kurta-texture">
+            <div class="container hero-content">
+                <h1 class="hero-title">Elegance for the Modern Gentleman</h1>
+                <p class="hero-subtitle">Discover our premium collection of traditional and contemporary men's attire</p>
+                <div class="hero-buttons">
+                    <button class="btn" id="shop-now-btn">Shop Now</button>
+                    <button class="btn btn-outline" id="our-story-btn">Our Story</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Our Collection</h2>
+                <div class="category-filters">
+                    <button class="btn filter-btn active" data-category="all">All</button>
+                    <button class="btn filter-btn" data-category="kurtas">Kurtas</button>
+                    <button class="btn filter-btn" data-category="sherwanis">Sherwanis</button>
+                    <button class="btn filter-btn" data-category="modern">Modern Wear</button>
+                    <button class="btn filter-btn" data-category="traditional">Traditional</button>
+                </div>
+                <div class="product-grid" id="products-container">
+                    <!-- Products loaded by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">About Us</h2>
+                <div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                    <p style="margin-bottom: 20px; font-size: 1.1rem;">Shree Siddhivinayak Creation specializes in premium men's traditional and contemporary clothing for over two decades.</p>
+                    <p style="margin-bottom: 20px; font-size: 1.1rem;">From elegant kurtas to royal sherwanis, we bring you the finest men's fashion with authentic craftsmanship.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Contact Us</h2>
+                <div style="text-align: center;">
+                    <p>Email: info@siddhivinayakcreation.com</p>
+                    <p>Phone: +91 98765 43210</p>
+                    <p>Address: Shirpure Road, Opposite Deore Hospital, Sion, Maharashtra 400022</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Your Shopping Cart</h2>
+                <div id="cart-items">
+                    <!-- Cart items loaded here -->
+                </div>
+                <div class="cart-total">
+                    <h3>Total: ₹<span id="cart-total">0</span></h3>
+                    <button class="btn" id="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout Section -->
+        <section id="checkout-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Checkout</h2>
+                <div class="checkout-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="checkout-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="checkout-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="checkout-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="checkout-address" required></textarea>
+                    </div>
+                    <button class="btn" id="place-order-btn">Place Order</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Section -->
+        <section id="payment-section" class="featured" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Select Payment Method</h2>
+                <div class="payment-options">
+                    <div class="payment-method" data-method="Credit Card">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Credit Card</h3>
+                            <p>Pay with your credit card</p>
+                        </div>
+                        <div class="payment-radio"></div>
+                    </div>
+                    <div class="payment-method" data-method="Debit Card">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Debit Card</h3>
+                            <p>Pay with your debit card</p>
+                        </div>
+                        <div class="payment-radio"></div>
+                    </div>
+                    <div class="payment-method" data-method="UPI">
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>UPI</h3>
+                            <p>Pay using UPI apps</p>
+                        </div>
+                        <div class="payment-radio"></div>
+                    </div>
+                    <div class="payment-method" data-method="Net Banking">
+                        <div class="payment-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="payment-details">
+                            <h3>Net Banking</h3>
+                            <p>Pay through net banking</p>
+                        </div>
+                        <div class="payment-radio"></div>
+                    </div>
+                </div>
+                <div class="payment-actions">
+                    <button class="btn btn-outline" id="back-to-checkout">Back to Checkout</button>
+                    <button class="btn" id="confirm-payment" disabled>Confirm Payment</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Success Section -->
+        <section id="order-success-section" class="featured" style="display: none;">
+            <div class="container">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Order Placed Successfully!</h2>
+                    <p>Thank you for your purchase. Your order has been confirmed.</p>
+                    <p>You will receive an email confirmation shortly.</p>
+                    <button class="btn" id="continue-shopping">Continue Shopping</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Processing Modal -->
+        <div id="payment-processing-modal" class="modal">
+            <div class="modal-content payment-modal">
+                <div class="payment-header">
+                    <h3>Processing Payment</h3>
+                    <div class="payment-loader">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+                
+                <div class="payment-steps">
+                    <div class="step active" id="step-1">
+                        <div class="step-icon">1</div>
+                        <div class="step-text">Initializing Payment</div>
+                    </div>
+                    <div class="step" id="step-2">
+                        <div class="step-icon">2</div>
+                        <div class="step-text">Sending OTP</div>
+                    </div>
+                    <div class="step" id="step-3">
+                        <div class="step-icon">3</div>
+                        <div class="step-text">Verifying OTP</div>
+                    </div>
+                    <div class="step" id="step-4">
+                        <div class="step-icon">4</div>
+                        <div class="step-text">Completing Payment</div>
+                    </div>
+                </div>
+
+                <!-- OTP Verification Section -->
+                <div id="otp-section" class="otp-section" style="display: none;">
+                    <div class="otp-header">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h4>OTP Sent to Your Mobile</h4>
+                    </div>
+                    <p class="otp-info">We've sent a 6-digit OTP to your registered mobile number ending with <span id="mobile-ending">****</span></p>
+                    
+                    <div class="otp-input-container">
+                        <input type="text" id="otp-1" class="otp-input" maxlength="1" data-index="1">
+                        <input type="text" id="otp-2" class="otp-input" maxlength="1" data-index="2">
+                        <input type="text" id="otp-3" class="otp-input" maxlength="1" data-index="3">
+                        <input type="text" id="otp-4" class="otp-input" maxlength="1" data-index="4">
+                        <input type="text" id="otp-5" class="otp-input" maxlength="1" data-index="5">
+                        <input type="text" id="otp-6" class="otp-input" maxlength="1" data-index="6">
+                    </div>
+                    
+                    <div class="otp-timer">
+                        <p>OTP valid for: <span id="otp-timer">02:00</span></p>
+                    </div>
+                    
+                    <div class="otp-actions">
+                        <button class="btn btn-outline" id="resend-otp" disabled>Resend OTP</button>
+                        <button class="btn" id="verify-otp">Verify & Pay</button>
+                    </div>
+                </div>
+
+                <div class="payment-details">
+                    <div class="payment-amount">
+                        <span>Amount to Pay:</span>
+                        <span id="payment-amount">₹0</span>
+                    </div>
+                    <div class="payment-method-display">
+                        <span>Payment Method:</span>
+                        <span id="selected-method-display">Credit Card</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Modal -->
+        <div id="admin-login-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Admin Login</h3>
+                    <button class="close-modal" id="close-admin-modal">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="admin-username" value="admin">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" value="admin123">
+                </div>
+                <button class="btn" id="admin-login-btn">Login</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <section id="admin-panel" class="admin-panel" style="display: none;">
+            <div class="container">
+                <div class="admin-header">
+                    <h2>Admin Dashboard</h2>
+                    <button class="btn" id="back-to-store-btn">Back to Store</button>
+                </div>
+                
+                <div class="admin-section">
+                    <h3>Add New Product</h3>
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="product-name">
+                    </div>
+                     <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="product-description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" id="product-price">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="product-category">
+                            <option value="kurtas">Kurtas</option>
+                            <option value="sherwanis">Sherwanis</option>
+                            <option value="modern">Modern Wear</option>
+                            <option value="traditional">Traditional</option>
+                        </select>
+                    </div>
+                    <button class="btn" id="add-product-btn">Add Product</button>
+                </div>
+
+                <div class="admin-section">
+                    <h3>Manage Products</h3>
+                    <div id="admin-products-list">
+                        <!-- Products listed here -->
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>Orders</h3>
+                    <div id="admin-orders-list">
+                        <!-- Orders listed here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Image Modal -->
+        <div id="imageModal" class="modal">
+            <span class="close-btn" id="close-image-modal">&times;</span>
+            <img class="modal-content" id="modalImage">
+            <div id="modalCaption" class="modal-caption"></div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
