@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Add Axios for API calls -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -275,75 +277,79 @@
                 </div>
             </div>
         </section>
+<!-- Payment Processing Modal -->
+<div id="payment-processing-modal" class="modal">
+    <div class="modal-content payment-modal">
+        <!-- Add Close Button -->
+        <div class="payment-header">
+            <h3>Processing Payment</h3>
+            <span class="close-modal" id="close-payment-modal">&times;</span>
+        </div>
 
-        <!-- Payment Processing Modal -->
-        <div id="payment-processing-modal" class="modal">
-            <div class="modal-content payment-modal">
-                <div class="payment-header">
-                    <h3>Processing Payment</h3>
-                    <div class="payment-loader">
-                        <div class="loader"></div>
-                    </div>
-                </div>
+        <div class="payment-loader">
+            <div class="loader"></div>
+        </div>
 
-                <div class="payment-steps">
-                    <div class="step active" id="step-1">
-                        <div class="step-icon">1</div>
-                        <div class="step-text">Initializing Payment</div>
-                    </div>
-                    <div class="step" id="step-2">
-                        <div class="step-icon">2</div>
-                        <div class="step-text">Sending OTP</div>
-                    </div>
-                    <div class="step" id="step-3">
-                        <div class="step-icon">3</div>
-                        <div class="step-text">Verifying OTP</div>
-                    </div>
-                    <div class="step" id="step-4">
-                        <div class="step-icon">4</div>
-                        <div class="step-text">Completing Payment</div>
-                    </div>
-                </div>
-
-                <!-- OTP Verification Section -->
-                <div id="otp-section" class="otp-section">
-                    <div class="otp-header">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h4>OTP Sent to Your Mobile</h4>
-                    </div>
-                    <p class="otp-info">We've sent a 6-digit OTP to your registered mobile number ending with <span id="mobile-ending">****</span></p>
-
-                    <div class="otp-input-container">
-                        <input type="text" id="otp-1" class="otp-input" maxlength="1" data-index="1">
-                        <input type="text" id="otp-2" class="otp-input" maxlength="1" data-index="2">
-                        <input type="text" id="otp-3" class="otp-input" maxlength="1" data-index="3">
-                        <input type="text" id="otp-4" class="otp-input" maxlength="1" data-index="4">
-                        <input type="text" id="otp-5" class="otp-input" maxlength="1" data-index="5">
-                        <input type="text" id="otp-6" class="otp-input" maxlength="1" data-index="6">
-                    </div>
-
-                    <div class="otp-timer">
-                        <p>OTP valid for: <span id="otp-timer">02:00</span></p>
-                    </div>
-
-                    <div class="otp-actions">
-                        <button class="btn btn-outline" id="resend-otp" disabled>Resend OTP</button>
-                        <button class="btn" id="verify-otp">Verify & Pay</button>
-                    </div>
-                </div>
-
-                <div class="payment-details">
-                    <div class="payment-amount">
-                        <span>Amount to Pay:</span>
-                        <span id="payment-amount">₹0</span>
-                    </div>
-                    <div class="payment-method-display">
-                        <span>Payment Method:</span>
-                        <span id="selected-method-display">Credit Card</span>
-                    </div>
-                </div>
+        <div class="payment-steps">
+            <div class="step active" id="step-1">
+                <div class="step-icon">1</div>
+                <div class="step-text">Initializing Payment</div>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-icon">2</div>
+                <div class="step-text">Sending OTP</div>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-icon">3</div>
+                <div class="step-text">Verifying OTP</div>
+            </div>
+            <div class="step" id="step-4">
+                <div class="step-icon">4</div>
+                <div class="step-text">Completing Payment</div>
             </div>
         </div>
+
+        <!-- OTP Verification Section -->
+        <div id="otp-section" class="otp-section">
+            <div class="otp-header">
+                <i class="fas fa-mobile-alt"></i>
+                <h4>OTP Sent to Your Mobile</h4>
+            </div>
+            <p class="otp-info">We've sent a 6-digit OTP to your registered mobile number ending with <span id="mobile-ending">****</span></p>
+            <p class="otp-note">Note: This is a demo. Use any 6-digit number as OTP.</p>
+
+            <div class="otp-input-container">
+                <input type="text" id="otp-1" class="otp-input" maxlength="1" data-index="1" inputmode="numeric">
+                <input type="text" id="otp-2" class="otp-input" maxlength="1" data-index="2" inputmode="numeric">
+                <input type="text" id="otp-3" class="otp-input" maxlength="1" data-index="3" inputmode="numeric">
+                <input type="text" id="otp-4" class="otp-input" maxlength="1" data-index="4" inputmode="numeric">
+                <input type="text" id="otp-5" class="otp-input" maxlength="1" data-index="5" inputmode="numeric">
+                <input type="text" id="otp-6" class="otp-input" maxlength="1" data-index="6" inputmode="numeric">
+            </div>
+
+            <div class="otp-timer">
+                <p>OTP valid for: <span id="otp-timer">02:00</span></p>
+            </div>
+
+            <div class="otp-actions">
+                <button class="btn btn-outline" id="resend-otp" disabled>Resend OTP</button>
+                <button class="btn" id="verify-otp">Verify & Pay</button>
+                <button class="btn btn-cancel" id="cancel-payment">Cancel Payment</button>
+            </div>
+        </div>
+
+        <div class="payment-details">
+            <div class="payment-amount">
+                <span>Amount to Pay:</span>
+                <span id="payment-amount">₹0</span>
+            </div>
+            <div class="payment-method-display">
+                <span>Payment Method:</span>
+                <span id="selected-method-display">Credit Card</span>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Image Modal -->
         <div id="imageModal" class="modal">
@@ -389,7 +395,8 @@
     <button class="scroll-to-top" id="scroll-to-top">
         <i class="fas fa-chevron-up"></i>
     </button>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
