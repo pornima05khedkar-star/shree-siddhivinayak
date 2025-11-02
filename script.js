@@ -1,125 +1,1186 @@
+// // ==================== GLOBAL VARIABLES ====================
+// let cart = JSON.parse(localStorage.getItem('cart')) || [];
+// let allProducts = [];
+// let selectedPaymentMethod = null;
+// let paymentInProgress = false;
+// let generatedOTP = '';
+// let otpTimer = null;
+
+// // ==================== IMAGE MODAL FUNCTIONALITY ====================
+// function openModal(imgElement) {
+//     const modal = document.getElementById("imageModal");
+//     const modalImg = document.getElementById("modalImage");
+//     const captionText = document.getElementById("modalCaption");
+    
+//     if (modal && modalImg) {
+//         modal.style.display = "block";
+//         modalImg.src = imgElement.src;
+//         captionText.innerHTML = imgElement.alt;
+//     }
+// }
+
+// function closeModal() {
+//     const modal = document.getElementById("imageModal");
+//     if (modal) {
+//         modal.style.display = "none";
+//     }
+// }
+
+// // ==================== SECTION MANAGEMENT ====================
+// function showSection(sectionName) {
+//     console.log('Showing section:', sectionName);
+    
+//     // Hide all sections
+//     document.querySelectorAll('main > section').forEach(section => {
+//         section.style.display = 'none';
+//     });
+    
+//     // Update active navigation
+//     document.querySelectorAll('.nav-link').forEach(link => {
+//         link.classList.remove('active');
+//         if (link.getAttribute('data-section') === sectionName) {
+//             link.classList.add('active');
+//         }
+//     });
+    
+//     // Show selected section
+//     const targetSection = document.getElementById(sectionName + '-section');
+//     if (targetSection) {
+//         targetSection.style.display = 'block';
+//         console.log('Section shown successfully');
+//     }
+    
+//     // Special handling for cart
+//     if (sectionName === 'cart') {
+//         showCart();
+//     }
+// }
+
+// // ==================== CART FUNCTIONS ====================
+// function addToCart(productId) {
+//     console.log('Adding to cart - Product ID:', productId, 'Type:', typeof productId);
+    
+//     // Convert productId to string for comparison (in case it's a number)
+//     const productIdStr = String(productId);
+//     const product = allProducts.find(p => String(p._id) === productIdStr);
+    
+//     console.log('Found product:', product);
+    
+//     if (!product) {
+//         console.error('Product not found for ID:', productId);
+//         showNotification('Product not found!');
+//         return;
+//     }
+    
+//     // Check if product already in cart
+//     const existingItem = cart.find(item => String(item._id) === productIdStr);
+//     if (existingItem) {
+//         existingItem.quantity += 1;
+//         console.log('Increased quantity for:', product.name, 'New quantity:', existingItem.quantity);
+//     } else {
+//         cart.push({
+//             _id: product._id,
+//             name: product.name,
+//             price: product.price,
+//             images: product.images,
+//             quantity: 1
+//         });
+//         console.log('Added new item to cart:', product.name);
+//     }
+    
+//     saveCart();
+//     updateCartCount();
+//     showNotification(`${product.name} added to cart!`);
+// }
+
+// function saveCart() {
+//     localStorage.setItem('cart', JSON.stringify(cart));
+// }
+
+// function updateCartCount() {
+//     const cartCount = document.querySelector('.cart-count');
+//     if (cartCount) {
+//         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+//         cartCount.textContent = totalItems;
+//     }
+// }
+
+// function showCart() {
+//     const container = document.getElementById('cart-items');
+//     if (!container) return;
+    
+//     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+//     if (cart.length === 0) {
+//         container.innerHTML = '<p>Your cart is empty!</p>';
+//     } else {
+//         container.innerHTML = cart.map(item => `
+//             <div class="cart-item" data-product-id="${item._id}">
+//                 <img src="${item.images[0]}" width="60" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+//                 <div>
+//                     <h4>${item.name}</h4>
+//                     <p>₹${item.price} x ${item.quantity}</p>
+//                     <div class="quantity-controls">
+//                         <button class="btn-quantity" data-action="decrease" data-product-id="${item._id}">-</button>
+//                         <span class="quantity-display">${item.quantity}</span>
+//                         <button class="btn-quantity" data-action="increase" data-product-id="${item._id}">+</button>
+//                     </div>
+//                 </div>
+//                 <button class="btn remove-btn" data-product-id="${item._id}">Remove</button>
+//             </div>
+//         `).join('');
+//     }
+    
+//     const cartTotal = document.getElementById('cart-total');
+//     if (cartTotal) {
+//         cartTotal.textContent = total;
+//     }
+// }
+
+// function updateQuantity(productId, change) {
+//     const productIdStr = String(productId);
+//     const item = cart.find(item => String(item._id) === productIdStr);
+//     if (item) {
+//         item.quantity += change;
+//         if (item.quantity <= 0) {
+//             removeFromCart(productId);
+//         } else {
+//             saveCart();
+//             updateCartCount();
+//             showCart();
+//             showNotification(`Quantity updated to ${item.quantity}`);
+//         }
+//     }
+// }
+
+// function removeFromCart(productId) {
+//     const productIdStr = String(productId);
+//     const itemIndex = cart.findIndex(item => String(item._id) === productIdStr);
+//     if (itemIndex !== -1) {
+//         const itemName = cart[itemIndex].name;
+//         cart.splice(itemIndex, 1);
+//         saveCart();
+//         updateCartCount();
+//         showCart();
+//         showNotification(`${itemName} removed from cart`);
+//     }
+// }
+
+// function showCheckout() {
+//     if (cart.length === 0) {
+//         showNotification('Your cart is empty!');
+//         return;
+//     }
+//     showSection('checkout');
+// }
+
+// // ==================== ORDER PROCESSING ====================
+// function placeOrder() {
+//     const firstName = document.getElementById('checkout-first-name').value;
+//     const lastName = document.getElementById('checkout-last-name').value;
+//     const email = document.getElementById('checkout-email').value;
+//     const phone = document.getElementById('checkout-phone').value;
+//     const address = document.getElementById('checkout-address').value;
+    
+//     // Validation
+//     if (!firstName || !lastName || !email || !phone || !address) {
+//         showNotification('Please fill all fields!');
+//         return;
+//     }
+    
+//     // Show payment options
+//     showPaymentOptions();
+// }
+
+// function completeOrder() {
+//     const email = document.getElementById('checkout-email').value;
+//     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+//     // Create order details
+//     const orderDetails = {
+//         orderId: 'ORD' + Date.now(),
+//         amount: totalAmount,
+//         items: cart.length
+//     };
+    
+//     // Send order confirmation Email
+//     sendOrderConfirmation(email, orderDetails);
+    
+//     // Clear cart
+//     cart = [];
+//     updateCartCount();
+//     saveCart();
+    
+//     // Show order success section
+//     showSection('order-success');
+    
+//     // Reset checkout form
+//     document.getElementById('checkout-first-name').value = '';
+//     document.getElementById('checkout-last-name').value = '';
+//     document.getElementById('checkout-email').value = '';
+//     document.getElementById('checkout-phone').value = '';
+//     document.getElementById('checkout-address').value = '';
+    
+//     showNotification('Order placed successfully! Confirmation sent to your email.');
+// }
+
+// // ==================== PAYMENT PROCESSING FUNCTIONS ====================
+// function showPaymentOptions() {
+//     if (cart.length === 0) {
+//         showNotification('Your cart is empty!');
+//         return;
+//     }
+    
+//     // Reset any previously selected payment method
+//     document.querySelectorAll('.payment-method').forEach(method => {
+//         method.classList.remove('selected');
+//     });
+    
+//     // Disable confirm payment button until a method is selected
+//     document.getElementById('confirm-payment').disabled = true;
+//     selectedPaymentMethod = null;
+    
+//     showSection('payment');
+// }
+
+// function setupPaymentSelection() {
+//     const paymentMethods = document.querySelectorAll('.payment-method');
+//     const confirmPaymentBtn = document.getElementById('confirm-payment');
+    
+//     paymentMethods.forEach(method => {
+//         method.addEventListener('click', function() {
+//             // Remove selected class from all methods
+//             paymentMethods.forEach(m => m.classList.remove('selected'));
+            
+//             // Add selected class to clicked method
+//             this.classList.add('selected');
+            
+//             // Store selected payment method
+//             selectedPaymentMethod = this.getAttribute('data-method');
+            
+//             // Enable confirm payment button
+//             confirmPaymentBtn.disabled = false;
+//         });
+//     });
+    
+//     // Back to checkout button
+//     const backToCheckoutBtn = document.getElementById('back-to-checkout');
+//     if (backToCheckoutBtn) {
+//         backToCheckoutBtn.addEventListener('click', () => showSection('checkout'));
+//     }
+    
+//     // Confirm payment button
+//     if (confirmPaymentBtn) {
+//         confirmPaymentBtn.addEventListener('click', function() {
+//             if (selectedPaymentMethod) {
+//                 processPayment(selectedPaymentMethod);
+//             }
+//         });
+//     }
+// }
+// function processPayment(paymentMethod) {
+//     if (paymentInProgress) return;
+    
+//     const firstName = document.getElementById('checkout-first-name').value;
+//     const lastName = document.getElementById('checkout-last-name').value;
+//     const email = document.getElementById('checkout-email').value;
+//     const phone = document.getElementById('checkout-phone').value;
+//     const address = document.getElementById('checkout-address').value;
+    
+//     if (!firstName || !lastName || !email || !phone || !address) {
+//         showNotification('Please fill all checkout details first!');
+//         showSection('checkout');
+//         return;
+//     }
+
+//     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+//     // Start payment processing (phone is now retrieved inside sendOTP)
+//     startPaymentProcessing(paymentMethod, totalAmount);
+// }
+
+// function startPaymentProcessing(paymentMethod, amount) {
+//     paymentInProgress = true;
+    
+//     // Show payment processing modal
+//     const modal = document.getElementById('payment-processing-modal');
+//     const paymentAmount = document.getElementById('payment-amount');
+//     const selectedMethodDisplay = document.getElementById('selected-method-display');
+    
+//     paymentAmount.textContent = `₹${amount}`;
+//     selectedMethodDisplay.textContent = paymentMethod;
+    
+//     modal.style.display = 'flex';
+    
+//     // Reset OTP inputs
+//     resetOTPInputs();
+    
+//     // Send OTP to the actual phone number
+//     sendOTP();
+    
+//     // Start payment flow
+//     simulatePaymentProcess();
+// }
+
+// function simulatePaymentProcess() {
+//     let currentStep = 1;
+    
+//     // Step 1: Initializing Payment
+//     updateStep(currentStep);
+//     setTimeout(() => {
+//         currentStep = 2;
+//         updateStep(currentStep);
+        
+//         // Step 2: Sending OTP (already sent in startPaymentProcessing)
+//         setTimeout(() => {
+//             showOTPSection();
+//             startOTPTimer();
+            
+//             currentStep = 3;
+//             updateStep(currentStep);
+//         }, 1500);
+//     }, 2000);
+// }
+
+// function updateStep(stepNumber) {
+//     // Reset all steps
+//     document.querySelectorAll('.step').forEach(step => {
+//         step.classList.remove('active', 'completed');
+//     });
+    
+//     // Mark previous steps as completed and current as active
+//     for (let i = 1; i <= 4; i++) {
+//         const step = document.getElementById(`step-${i}`);
+//         if (i < stepNumber) {
+//             step.classList.add('completed');
+//         } else if (i === stepNumber) {
+//             step.classList.add('active');
+//         }
+//     }
+// }
+
+// async function sendOTP() {
+//     const phone = document.getElementById('checkout-phone').value;
+//     const email = document.getElementById('checkout-email').value;
+    
+//     // Basic validation
+//     if (!phone || phone.length < 10) {
+//         showNotification('Please enter a valid phone number');
+//         return;
+//     }
+    
+//     if (!email || !email.includes('@')) {
+//         showNotification('Please enter a valid email address for OTP');
+//         return;
+//     }
+
+//     // Generate random 6-digit OTP
+//     generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    
+//     try {
+//         showNotification('Sending OTP to your email...');
+        
+//         // Send OTP via Email
+//         const success = await sendOTPViaEmail(email, generatedOTP, phone);
+        
+//         if (success) {
+//             showNotification(`OTP sent to ${email}`);
+//             console.log('OTP sent via email:', generatedOTP);
+//         } else {
+//             throw new Error('Failed to send OTP email');
+//         }
+//     } catch (error) {
+//         console.error('Email OTP failed:', error);
+//         // Fallback to on-screen display
+//         showNotification(`OTP: ${generatedOTP} - Enter this to continue`);
+//         console.log('OTP:', generatedOTP, 'for email:', email);
+//     }
+    
+//     // Update mobile ending display (now shows email)
+//     const mobileEnding = document.getElementById('mobile-ending');
+//     if (mobileEnding) {
+//         mobileEnding.textContent = email.split('@')[0].slice(-4) + '...';
+//     }
+// }
+
+// // EmailJS integration for OTP
+// async function sendOTPViaEmail(email, otp, phone) {
+//     const serviceID = 'service_b8qp1sx';           // ← CHANGED TO MATCH RENDER
+//     const templateID = 'template_qrr7x97';         // Your OTP template
+//     const userID = 'S0ZGmLq5Zma9ehfkj';            // Your public key
+
+    
+//     try {
+//         const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 service_id: serviceID,
+//                 template_id: templateID,
+//                 user_id: userID,
+//                 template_params: {
+//                     'user_email': email,
+//                     'otp_code': otp,
+//                     'phone_number': phone,
+//                     'company_name': 'Shree Siddhivinayak Creation',
+//                     'current_year': new Date().getFullYear()
+//                 }
+//             })
+//         });
+        
+//         return response.ok;
+//     } catch (error) {
+//         console.error('EmailJS error:', error);
+//         return false;
+//     }
+// }
+
+
+// // Send order confirmation via Email
+// async function sendOrderConfirmation(email, orderDetails) {
+//     const serviceID = 'service_b8qp1sx';           // ← CHANGED TO MATCH RENDER
+//     const templateID = 'template_bz6fy8r';         // Your order template
+//     const userID = 'S0ZGmLq5Zma9ehfkj';            // Your public key
+    
+//     try {
+//         const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 service_id: serviceID,
+//                 template_id: templateID,
+//                 user_id: userID,
+//                 template_params: {
+//                     'user_email': email,
+//                     'order_id': orderDetails.orderId,
+//                     'order_amount': orderDetails.amount,
+//                     'order_date': new Date().toLocaleDateString(),
+//                     'company_name': 'Shree Siddhivinayak Creation',
+//                     'customer_name': document.getElementById('checkout-first-name').value + ' ' + document.getElementById('checkout-last-name').value
+//                 }
+//             })
+//         });
+        
+//         console.log('Order confirmation email sent:', response.ok);
+//         return response.ok;
+//     } catch (error) {
+//         console.error('Order confirmation email failed:', error);
+//         return false;
+//     }
+// }
+
+// function showOTPSection() {
+//     const otpSection = document.getElementById('otp-section');
+//     otpSection.style.display = 'block';
+    
+//     // Focus on first OTP input
+//     setTimeout(() => {
+//         document.getElementById('otp-1').focus();
+//     }, 100);
+// }
+
+// function startOTPTimer() {
+//     let timeLeft = 120; // 2 minutes in seconds
+//     const timerElement = document.getElementById('otp-timer');
+//     const resendButton = document.getElementById('resend-otp');
+    
+//     // Clear any existing timer
+//     if (otpTimer) clearInterval(otpTimer);
+    
+//     // Enable OTP verification immediately
+//     document.getElementById('verify-otp').disabled = false;
+    
+//     otpTimer = setInterval(() => {
+//         const minutes = Math.floor(timeLeft / 60);
+//         const seconds = timeLeft % 60;
+//         timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+//         timeLeft--;
+        
+//         if (timeLeft < 0) {
+//             clearInterval(otpTimer);
+//             resendButton.disabled = false;
+//             resendButton.textContent = 'Resend OTP';
+//             showNotification('OTP has expired. Please request a new one.');
+//         }
+//     }, 1000);
+// }
+
+// function resetOTPTimer() {
+//     if (otpTimer) clearInterval(otpTimer);
+//     startOTPTimer();
+// }
+
+// function resetOTPInputs() {
+//     for (let i = 1; i <= 6; i++) {
+//         const input = document.getElementById(`otp-${i}`);
+//         if (input) {
+//             input.value = '';
+//             input.classList.remove('error', 'filled');
+//         }
+//     }
+// }
+
+// // ==================== OTP INPUT HANDLING ====================
+// function setupOTPInputHandling() {
+//     // Setup OTP input event listeners
+//     for (let i = 1; i <= 6; i++) {
+//         const input = document.getElementById(`otp-${i}`);
+//         if (input) {
+//             input.addEventListener('input', handleOTPInput);
+//             input.addEventListener('keydown', handleOTPKeydown);
+//             input.addEventListener('paste', handleOTPPaste);
+//         }
+//     }
+    
+//     // Verify OTP button
+//     const verifyOTPBtn = document.getElementById('verify-otp');
+//     if (verifyOTPBtn) {
+//         verifyOTPBtn.addEventListener('click', verifyOTP);
+//     }
+    
+//     // Resend OTP button
+//     const resendOTPBtn = document.getElementById('resend-otp');
+//     if (resendOTPBtn) {
+//         resendOTPBtn.addEventListener('click', resendOTP);
+//     }
+    
+//     // Cancel payment button
+//     const cancelPaymentBtn = document.getElementById('cancel-payment');
+//     if (cancelPaymentBtn) {
+//         cancelPaymentBtn.addEventListener('click', closePaymentModal);
+//     }
+    
+//     // Close modal button
+//     const closeModalBtn = document.getElementById('close-payment-modal');
+//     if (closeModalBtn) {
+//         closeModalBtn.addEventListener('click', closePaymentModal);
+//     }
+// }
+
+// function handleOTPInput(event) {
+//     const input = event.target;
+//     const value = input.value;
+//     const index = parseInt(input.getAttribute('data-index'));
+    
+//     // Allow only numbers
+//     const numericValue = value.replace(/[^0-9]/g, '');
+//     input.value = numericValue;
+    
+//     // Update filled class
+//     if (numericValue) {
+//         input.classList.add('filled');
+//     } else {
+//         input.classList.remove('filled');
+//     }
+    
+//     // Remove error class when user types
+//     input.classList.remove('error');
+    
+//     // Auto move to next input
+//     if (numericValue.length === 1 && index < 6) {
+//         const nextInput = document.getElementById(`otp-${index + 1}`);
+//         if (nextInput) nextInput.focus();
+//     }
+    
+//     // Auto verify when all inputs are filled
+//     if (index === 6 && numericValue.length === 1) {
+//         setTimeout(() => {
+//             if (isOTPComplete()) {
+//                 verifyOTP();
+//             }
+//         }, 100);
+//     }
+// }
+
+// function handleOTPKeydown(event) {
+//     const input = event.target;
+//     const value = input.value;
+//     const index = parseInt(input.getAttribute('data-index'));
+    
+//     if (event.key === 'Backspace') {
+//         if (value.length === 0 && index > 1) {
+//             const prevInput = document.getElementById(`otp-${index - 1}`);
+//             if (prevInput) {
+//                 prevInput.focus();
+//                 prevInput.value = '';
+//                 prevInput.classList.remove('filled');
+//             }
+//         }
+//     }
+// }
+
+// function handleOTPPaste(event) {
+//     event.preventDefault();
+//     const pasteData = event.clipboardData.getData('text').slice(0, 6);
+//     const numericData = pasteData.replace(/[^0-9]/g, '');
+    
+//     if (numericData.length === 6) {
+//         for (let i = 0; i < 6; i++) {
+//             const input = document.getElementById(`otp-${i + 1}`);
+//             if (input) {
+//                 input.value = numericData[i];
+//                 input.classList.add('filled');
+//             }
+//         }
+//         // Focus last input and verify
+//         document.getElementById('otp-6').focus();
+//         setTimeout(verifyOTP, 100);
+//     }
+// }
+
+// function isOTPComplete() {
+//     for (let i = 1; i <= 6; i++) {
+//         const input = document.getElementById(`otp-${i}`);
+//         if (!input || input.value.length !== 1) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
+
+// function verifyOTP() {
+//     const enteredOTP = getEnteredOTP();
+    
+//     if (enteredOTP.length !== 6) {
+//         showNotification('Please enter complete 6-digit OTP');
+//         showOTPError();
+//         return;
+//     }
+    
+//     // For demo purposes, accept any 6-digit OTP
+//     if (enteredOTP.length === 6) {
+//         // OTP verified successfully
+//         completePaymentProcess();
+//     } else {
+//         // Invalid OTP
+//         showOTPError();
+//         showNotification('Invalid OTP. Please try again.');
+//     }
+// }
+
+// function getEnteredOTP() {
+//     let otp = '';
+//     for (let i = 1; i <= 6; i++) {
+//         const input = document.getElementById(`otp-${i}`);
+//         if (input) {
+//             otp += input.value;
+//         }
+//     }
+//     return otp;
+// }
+
+// function showOTPError() {
+//     // Add error class to all OTP inputs
+//     for (let i = 1; i <= 6; i++) {
+//         const input = document.getElementById(`otp-${i}`);
+//         if (input) {
+//             input.classList.add('error');
+//         }
+//     }
+    
+//     // Shake animation for error
+//     const otpContainer = document.querySelector('.otp-input-container');
+//     if (otpContainer) {
+//         otpContainer.style.animation = 'shake 0.5s ease';
+//         setTimeout(() => {
+//             otpContainer.style.animation = '';
+//         }, 500);
+//     }
+// }
+
+// function completePaymentProcess() {
+//     if (otpTimer) clearInterval(otpTimer);
+    
+//     // Update to final step
+//     updateStep(4);
+    
+//     // Show success state
+//     setTimeout(() => {
+//         const modal = document.getElementById('payment-processing-modal');
+//         const modalContent = modal.querySelector('.modal-content');
+        
+//         modalContent.innerHTML = `
+//             <div class="payment-success" style="text-align: center; padding: 30px;">
+//                 <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--accent-gold); margin-bottom: 20px;"></i>
+//                 <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Payment Successful!</h3>
+//                 <p style="color: var(--text-secondary); margin-bottom: 10px;">Your payment of ₹${document.getElementById('payment-amount').textContent.slice(1)} has been processed successfully.</p>
+//                 <p style="color: var(--text-secondary); margin-bottom: 25px;">Order confirmation has been sent to your email.</p>
+//                 <button class="btn" id="close-payment-success" style="margin-top: 15px;">Continue Shopping</button>
+//             </div>
+//         `;
+        
+//         // Add event listener for continue button
+//         document.getElementById('close-payment-success').addEventListener('click', () => {
+//             modal.style.display = 'none';
+//             completeOrder();
+//             paymentInProgress = false;
+//         });
+        
+//     }, 1000);
+// }
+
+// function resendOTP() {
+//     const resendButton = document.getElementById('resend-otp');
+//     resendButton.disabled = true;
+//     resendButton.textContent = 'Resending...';
+    
+//     resetOTPInputs();
+//     sendOTP(); // This will now use the actual phone number
+//     resetOTPTimer();
+    
+//     setTimeout(() => {
+//         resendButton.textContent = 'Resend OTP';
+//         document.getElementById('otp-1').focus();
+//         // Notification is already shown in sendOTP()
+//     }, 2000);
+// }
+
+// function closePaymentModal() {
+//     const modal = document.getElementById('payment-processing-modal');
+//     modal.style.display = 'none';
+    
+//     // Reset payment state
+//     paymentInProgress = false;
+    
+//     // Clear OTP timer
+//     if (otpTimer) {
+//         clearInterval(otpTimer);
+//         otpTimer = null;
+//     }
+    
+//     // Reset OTP inputs
+//     resetOTPInputs();
+    
+//     // Reset steps
+//     document.querySelectorAll('.step').forEach(step => {
+//         step.classList.remove('active', 'completed');
+//     });
+//     document.getElementById('step-1').classList.add('active');
+    
+//     // Hide OTP section
+//     document.getElementById('otp-section').style.display = 'none';
+    
+//     showNotification('Payment cancelled');
+// }
+
+// // ==================== PRODUCT DISPLAY ====================
+// function displayProducts(products) {
+//     const container = document.getElementById('products-container');
+//     if (!container) return;
+    
+//     container.innerHTML = products.map(product => `
+//         <div class="product-card" data-category="${product.category}">
+//             <div class="product-image-container">
+//                 <img src="${product.images[0]}" alt="${product.name}" class="product-image" data-product-image="true" onerror="this.src='https://via.placeholder.com/300x400/1a1a1a/d4af37?text=${encodeURIComponent(product.name)}'">
+//                 <div class="product-overlay">
+//                     <button class="btn view-details-btn" data-product-id="${product._id}">Quick View</button>
+//                 </div>
+//             </div>
+//             <div class="product-info">
+//                 <div class="product-category-badge">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
+//                 <h3 class="product-title">${product.name}</h3>
+//                 <p class="product-description">${product.description}</p>
+//                 <div class="product-features">
+//                     <span class="size-badge">${product.sizes.join(', ')}</span>
+//                     <span class="color-badge">${product.colors.length} colors</span>
+//                 </div>
+//                 <div class="product-price-section">
+//                     <p class="product-price">₹${product.price.toLocaleString()}</p>
+//                     <div class="rating">
+//                         <i class="fas fa-star"></i>
+//                         <i class="fas fa-star"></i>
+//                         <i class="fas fa-star"></i>
+//                         <i class="fas fa-star"></i>
+//                         <i class="fas fa-star-half-alt"></i>
+//                         <span class="rating-text">(4.5)</span>
+//                     </div>
+//                 </div>
+//                 <div class="product-actions">
+//                     <button class="btn add-to-cart-btn" data-product-id="${product._id}">
+//                         <i class="fas fa-shopping-bag"></i>
+//                         Add to Cart
+//                     </button>
+//                     <button class="wishlist-btn" title="Add to Wishlist">
+//                         <i class="far fa-heart"></i>
+//                     </button>
+//                 </div>
+//             </div>
+//         </div>
+//     `).join('');
+// }
+
+// function filterProducts(category) {
+//     const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
+//     displayProducts(filtered);
+    
+//     // Update active filter button with smooth animation
+//     document.querySelectorAll('.filter-btn').forEach(btn => {
+//         btn.classList.remove('active');
+//         if (btn.getAttribute('data-category') === category) {
+//             btn.classList.add('active');
+//         }
+//     });
+    
+//     // Add smooth scroll to products
+//     const productsSection = document.getElementById('products-section');
+//     if (productsSection) {
+//         productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+//     }
+// }
+
+// // ==================== UTILITY FUNCTIONS ====================
+// function showNotification(message) {
+//     // Remove existing notification
+//     const existing = document.querySelector('.notification');
+//     if (existing) existing.remove();
+
+//     const notification = document.createElement('div');
+//     notification.className = 'notification';
+//     notification.textContent = message;
+//     notification.style.cssText = `
+//         position: fixed;
+//         top: 20px;
+//         right: 20px;
+//         background: var(--accent-maroon);
+//         color: white;
+//         padding: 15px 20px;
+//         border-radius: var(--border-radius);
+//         z-index: 1000;
+//         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+//         animation: slideIn 0.3s ease;
+//     `;
+//     document.body.appendChild(notification);
+
+//     setTimeout(() => {
+//         if (notification.parentNode) {
+//             notification.style.animation = 'slideOut 0.3s ease';
+//             setTimeout(() => {
+//                 if (notification.parentNode) {
+//                     document.body.removeChild(notification);
+//                 }
+//             }, 300);
+//         }
+//     }, 3000);
+// }
+
+// // ==================== EVENT DELEGATION ====================
+// function setupEventDelegation() {
+//     // Event delegation for dynamically created elements
+//     document.addEventListener('click', function(e) {
+//         const target = e.target;
+        
+//         // Add to cart buttons
+//         if (target.classList.contains('add-to-cart-btn')) {
+//             const productId = target.getAttribute('data-product-id');
+//             addToCart(productId);
+//         }
+        
+//         // Quantity buttons in cart
+//         if (target.classList.contains('btn-quantity')) {
+//             const productId = target.getAttribute('data-product-id');
+//             const action = target.getAttribute('data-action');
+//             const change = action === 'increase' ? 1 : -1;
+//             updateQuantity(productId, change);
+//         }
+        
+//         // Remove from cart buttons
+//         if (target.classList.contains('remove-btn')) {
+//             const productId = target.getAttribute('data-product-id');
+//             removeFromCart(productId);
+//         }
+        
+//         // Product images for modal
+//         if (target.hasAttribute('data-product-image')) {
+//             openModal(target);
+//         }
+        
+//         // Close modal when clicking outside
+//         if (target.id === 'imageModal') {
+//             closeModal();
+//         }
+//     });
+// }
+
+// // ==================== EVENT LISTENER SETUP ====================
+// function setupEventListeners() {
+//     // Place Order Button
+//     const placeOrderBtn = document.getElementById('place-order-btn');
+//     if (placeOrderBtn) {
+//         placeOrderBtn.addEventListener('click', function(e) {
+//             e.preventDefault();
+//             placeOrder();
+//         });
+//     }
+
+//     // Cart icon
+//     const cartIcon = document.getElementById('cart-icon');
+//     if (cartIcon) cartIcon.addEventListener('click', () => showSection('cart'));
+
+//     // Checkout button
+//     const checkoutBtn = document.getElementById('checkout-btn');
+//     if (checkoutBtn) checkoutBtn.addEventListener('click', showCheckout);
+
+//     // Continue shopping
+//     const continueShopping = document.getElementById('continue-shopping');
+//     if (continueShopping) continueShopping.addEventListener('click', () => showSection('home'));
+
+//     // Close image modal
+//     const closeImageModalBtn = document.getElementById('close-image-modal');
+//     if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeModal);
+
+//     // Shop now button
+//     const shopNowBtn = document.getElementById('shop-now-btn');
+//     if (shopNowBtn) shopNowBtn.addEventListener('click', () => showSection('products'));
+
+//     // Our story button
+//     const ourStoryBtn = document.getElementById('our-story-btn');
+//     if (ourStoryBtn) ourStoryBtn.addEventListener('click', () => showSection('about'));
+
+//     // Filter buttons
+//     document.querySelectorAll('.filter-btn').forEach(btn => {
+//         btn.addEventListener('click', function() {
+//             const category = this.getAttribute('data-category');
+//             filterProducts(category);
+//         });
+//     });
+
+//     // Mobile menu
+//     const mobileToggle = document.getElementById('mobile-toggle');
+//     if (mobileToggle) mobileToggle.addEventListener('click', function() {
+//         document.querySelector('.nav-menu').classList.toggle('active');
+//     });
+
+//     // Navigation
+//     document.querySelectorAll('.nav-link').forEach(link => {
+//         link.addEventListener('click', function(e) {
+//             e.preventDefault();
+//             const section = this.getAttribute('data-section');
+//             showSection(section);
+//         });
+//     });
+
+//     // Payment setup
+//     setupPaymentSelection();
+//     setupOTPInputHandling();
+    
+//     // Event delegation for dynamic elements
+//     setupEventDelegation();
+// }
+
+// // ==================== INITIALIZATION ====================
+// function init() {
+//     // Load sample products - MEN'S CLOTHING ONLY with LOCAL IMAGES
+//     allProducts = [
+//         {
+//             _id: '1',
+//             name: 'Navy Blue Silk Kurta',
+//             description: 'Premium silk kurta with traditional embroidery',
+//             price: 3499,
+//             category: 'kurtas',
+//             images: ['uploads/kurta1.jpg'],
+//             sizes: ['S', 'M', 'L', 'XL'],
+//             colors: ['Navy Blue']
+//         },
+//         {
+//             _id: '2',
+//             name: 'White Chikan Kurta',
+//             description: 'Handcrafted chikan work on premium cotton',
+//             price: 5899,
+//             category: 'kurtas',
+//             images: ['uploads/kurta2.jpg'],
+//             sizes: ['S', 'M', 'L', 'XL'],
+//             colors: ['White', 'Off-White']
+//         },
+//         {
+//             _id: '3',
+//             name: 'Royal Maroon Sherwani',
+//             description: 'Regal sherwani with golden embroidery for weddings',
+//             price: 10999,
+//             category: 'sherwanis',
+//             images: ['uploads/shervani.jpg'],
+//             sizes: ['M', 'L', 'XL', 'XXL'],
+//             colors: ['Maroon', 'Red']
+//         },
+//         {
+//             _id: '4',
+//             name: 'Designer Indo-Western Suit',
+//             description: 'Contemporary fusion wear with traditional touch',
+//             price: 15399,
+//             category: 'modern',
+//             images: ['uploads/Indowestern.jpg'],
+//             sizes: ['S', 'M', 'L', 'XL'],
+//             colors: ['Black', 'Grey', 'Navy']
+//         },
+//         {
+//             _id: '5',
+//             name: 'Traditional Dhoti Kurta Set',
+//             description: 'Complete traditional attire for festivals',
+//             price: 4599,
+//             category: 'traditional',
+//             images: ['uploads/dhotikurta.jpg'],
+//             sizes: ['M', 'L', 'XL'],
+//             colors: ['White', 'Cream']
+//         },
+//         {
+//             _id: '6',
+//             name: 'Embroidered Jodhpuri Suit',
+//             description: 'Classic Jodhpuri style with intricate embroidery',
+//             price: 14999,
+//             category: 'modern',
+//             images: ['uploads/jodhpuri.jpg'],
+//             sizes: ['S', 'M', 'L', 'XL'],
+//             colors: ['Blue', 'Black']
+//         }
+//     ];
+    
+//     setupEventListeners();
+//     displayProducts(allProducts);
+//     updateCartCount();
+//     showSection('home');
+// }
+
+// // Add required CSS animations
+// const style = document.createElement('style');
+// style.textContent = `
+//     @keyframes slideIn {
+//         from { transform: translateX(300px); opacity: 0; }
+//         to { transform: translateX(0); opacity: 1; }
+//     }
+    
+//     @keyframes slideOut {
+//         from { transform: translateX(0); opacity: 1; }
+//         to { transform: translateX(300px); opacity: 0; }
+//     }
+    
+//     @keyframes shake {
+//         0%, 100% { transform: translateX(0); }
+//         25% { transform: translateX(-5px); }
+//         75% { transform: translateX(5px); }
+//     }
+    
+//     .otp-input.error {
+//         border-color: #dc3545 !important;
+//         background: rgba(220, 53, 69, 0.1) !important;
+//     }
+// `;
+// document.head.appendChild(style);
+
+// // Start everything when page loads
+// document.addEventListener('DOMContentLoaded', init);
+
+
+
+
+
 // ==================== GLOBAL VARIABLES ====================
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let allProducts = [];
 let selectedPaymentMethod = null;
 let paymentInProgress = false;
-let generatedOTP = '';
+let generatedOTP = '';   // the actual OTP server would generate ideally
 let otpTimer = null;
+let otpTimeLeft = 0;     // keep track so we can disable resend properly
 
 // ==================== IMAGE MODAL FUNCTIONALITY ====================
 function openModal(imgElement) {
     const modal = document.getElementById("imageModal");
     const modalImg = document.getElementById("modalImage");
     const captionText = document.getElementById("modalCaption");
-    
-    if (modal && modalImg) {
-        modal.style.display = "block";
-        modalImg.src = imgElement.src;
-        captionText.innerHTML = imgElement.alt;
-    }
+    if (!modal || !modalImg) return;
+    modal.style.display = "block";
+    modalImg.src = imgElement.src || '';
+    captionText && (captionText.innerHTML = imgElement.alt || '');
 }
 
 function closeModal() {
     const modal = document.getElementById("imageModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
+    if (!modal) return;
+    modal.style.display = "none";
 }
 
 // ==================== SECTION MANAGEMENT ====================
 function showSection(sectionName) {
-    console.log('Showing section:', sectionName);
-    
-    // Hide all sections
-    document.querySelectorAll('main > section').forEach(section => {
-        section.style.display = 'none';
-    });
-    
-    // Update active navigation
+    if (!sectionName) return;
+    // Hide all sections safely
+    document.querySelectorAll('main > section').forEach(section => section.style.display = 'none');
+
+    // Update nav
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('data-section') === sectionName) {
-            link.classList.add('active');
-        }
+        if (link.getAttribute('data-section') === sectionName) link.classList.add('active');
     });
-    
-    // Show selected section
+
+    // Show target
     const targetSection = document.getElementById(sectionName + '-section');
-    if (targetSection) {
-        targetSection.style.display = 'block';
-        console.log('Section shown successfully');
-    }
-    
-    // Special handling for cart
-    if (sectionName === 'cart') {
-        showCart();
-    }
+    if (targetSection) targetSection.style.display = 'block';
+
+    if (sectionName === 'cart') showCart();
 }
 
 // ==================== CART FUNCTIONS ====================
 function addToCart(productId) {
-    console.log('Adding to cart - Product ID:', productId, 'Type:', typeof productId);
-    
-    // Convert productId to string for comparison (in case it's a number)
+    if (!productId) return showNotification('Invalid product.');
     const productIdStr = String(productId);
     const product = allProducts.find(p => String(p._id) === productIdStr);
-    
-    console.log('Found product:', product);
-    
     if (!product) {
         console.error('Product not found for ID:', productId);
         showNotification('Product not found!');
         return;
     }
-    
-    // Check if product already in cart
+
     const existingItem = cart.find(item => String(item._id) === productIdStr);
     if (existingItem) {
-        existingItem.quantity += 1;
-        console.log('Increased quantity for:', product.name, 'New quantity:', existingItem.quantity);
+        existingItem.quantity = (existingItem.quantity || 0) + 1;
     } else {
         cart.push({
             _id: product._id,
             name: product.name,
-            price: product.price,
-            images: product.images,
+            price: Number(product.price) || 0,
+            images: product.images || [],
             quantity: 1
         });
-        console.log('Added new item to cart:', product.name);
     }
-    
+
     saveCart();
     updateCartCount();
     showNotification(`${product.name} added to cart!`);
 }
 
 function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    try {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (e) {
+        console.error('Failed to save cart to localStorage', e);
+    }
 }
 
 function updateCartCount() {
     const cartCount = document.querySelector('.cart-count');
-    if (cartCount) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCount.textContent = totalItems;
-    }
+    if (!cartCount) return;
+    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    cartCount.textContent = totalItems;
 }
 
 function showCart() {
     const container = document.getElementById('cart-items');
     if (!container) return;
-    
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    if (cart.length === 0) {
+
+    const total = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
+
+    if (!cart.length) {
         container.innerHTML = '<p>Your cart is empty!</p>';
     } else {
         container.innerHTML = cart.map(item => `
             <div class="cart-item" data-product-id="${item._id}">
-                <img src="${item.images[0]}" width="60" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                <img src="${(item.images && item.images[0]) || 'https://via.placeholder.com/60x60?text=No+Image'}" width="60" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
                 <div>
                     <h4>${item.name}</h4>
-                    <p>₹${item.price} x ${item.quantity}</p>
+                    <p>₹${Number(item.price).toLocaleString()} x ${item.quantity}</p>
                     <div class="quantity-controls">
                         <button class="btn-quantity" data-action="decrease" data-product-id="${item._id}">-</button>
                         <span class="quantity-display">${item.quantity}</span>
@@ -130,44 +1191,40 @@ function showCart() {
             </div>
         `).join('');
     }
-    
+
     const cartTotal = document.getElementById('cart-total');
-    if (cartTotal) {
-        cartTotal.textContent = total;
-    }
+    if (cartTotal) cartTotal.textContent = total.toLocaleString();
 }
 
 function updateQuantity(productId, change) {
     const productIdStr = String(productId);
-    const item = cart.find(item => String(item._id) === productIdStr);
-    if (item) {
-        item.quantity += change;
-        if (item.quantity <= 0) {
-            removeFromCart(productId);
-        } else {
-            saveCart();
-            updateCartCount();
-            showCart();
-            showNotification(`Quantity updated to ${item.quantity}`);
-        }
+    const item = cart.find(i => String(i._id) === productIdStr);
+    if (!item) return;
+    item.quantity = (item.quantity || 0) + change;
+    if (item.quantity <= 0) {
+        removeFromCart(productId);
+    } else {
+        saveCart();
+        updateCartCount();
+        showCart();
+        showNotification(`Quantity updated to ${item.quantity}`);
     }
 }
 
 function removeFromCart(productId) {
     const productIdStr = String(productId);
-    const itemIndex = cart.findIndex(item => String(item._id) === productIdStr);
-    if (itemIndex !== -1) {
-        const itemName = cart[itemIndex].name;
-        cart.splice(itemIndex, 1);
-        saveCart();
-        updateCartCount();
-        showCart();
-        showNotification(`${itemName} removed from cart`);
-    }
+    const idx = cart.findIndex(i => String(i._id) === productIdStr);
+    if (idx === -1) return;
+    const itemName = cart[idx].name;
+    cart.splice(idx, 1);
+    saveCart();
+    updateCartCount();
+    showCart();
+    showNotification(`${itemName} removed from cart`);
 }
 
 function showCheckout() {
-    if (cart.length === 0) {
+    if (!cart.length) {
         showNotification('Your cart is empty!');
         return;
     }
@@ -176,322 +1233,257 @@ function showCheckout() {
 
 // ==================== ORDER PROCESSING ====================
 function placeOrder() {
-    const firstName = document.getElementById('checkout-first-name').value;
-    const lastName = document.getElementById('checkout-last-name').value;
-    const email = document.getElementById('checkout-email').value;
-    const phone = document.getElementById('checkout-phone').value;
-    const address = document.getElementById('checkout-address').value;
-    
-    // Validation
+    const firstNameEl = document.getElementById('checkout-first-name');
+    const lastNameEl = document.getElementById('checkout-last-name');
+    const emailEl = document.getElementById('checkout-email');
+    const phoneEl = document.getElementById('checkout-phone');
+    const addressEl = document.getElementById('checkout-address');
+
+    const firstName = firstNameEl ? firstNameEl.value.trim() : '';
+    const lastName = lastNameEl ? lastNameEl.value.trim() : '';
+    const email = emailEl ? emailEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const address = addressEl ? addressEl.value.trim() : '';
+
     if (!firstName || !lastName || !email || !phone || !address) {
         showNotification('Please fill all fields!');
         return;
     }
-    
-    // Show payment options
+
     showPaymentOptions();
 }
 
 function completeOrder() {
-    const email = document.getElementById('checkout-email').value;
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    // Create order details
+    const emailEl = document.getElementById('checkout-email');
+    const firstNameEl = document.getElementById('checkout-first-name');
+    const lastNameEl = document.getElementById('checkout-last-name');
+
+    const email = emailEl ? emailEl.value.trim() : '';
+    const totalAmount = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
+
     const orderDetails = {
         orderId: 'ORD' + Date.now(),
         amount: totalAmount,
         items: cart.length
     };
-    
-    // Send order confirmation Email
-    sendOrderConfirmation(email, orderDetails);
-    
-    // Clear cart
+
+    // send order confirmation (fire-and-forget; it's ok if it fails)
+    if (email) sendOrderConfirmation(email, orderDetails).catch(err => console.error('Order email failed', err));
+
     cart = [];
     updateCartCount();
     saveCart();
-    
-    // Show order success section
+
     showSection('order-success');
-    
-    // Reset checkout form
-    document.getElementById('checkout-first-name').value = '';
-    document.getElementById('checkout-last-name').value = '';
-    document.getElementById('checkout-email').value = '';
-    document.getElementById('checkout-phone').value = '';
-    document.getElementById('checkout-address').value = '';
-    
-    showNotification('Order placed successfully! Confirmation sent to your email.');
+
+    // Reset checkout form safely
+    ['checkout-first-name','checkout-last-name','checkout-email','checkout-phone','checkout-address'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    showNotification('Order placed successfully! Confirmation sent to your email (if delivery succeeded).');
 }
 
 // ==================== PAYMENT PROCESSING FUNCTIONS ====================
 function showPaymentOptions() {
-    if (cart.length === 0) {
+    if (!cart.length) {
         showNotification('Your cart is empty!');
         return;
     }
-    
-    // Reset any previously selected payment method
-    document.querySelectorAll('.payment-method').forEach(method => {
-        method.classList.remove('selected');
-    });
-    
-    // Disable confirm payment button until a method is selected
-    document.getElementById('confirm-payment').disabled = true;
+
+    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+    const confirmBtn = document.getElementById('confirm-payment');
+    if (confirmBtn) confirmBtn.disabled = true;
     selectedPaymentMethod = null;
-    
+
     showSection('payment');
 }
 
 function setupPaymentSelection() {
-    const paymentMethods = document.querySelectorAll('.payment-method');
+    const paymentMethods = Array.from(document.querySelectorAll('.payment-method') || []);
     const confirmPaymentBtn = document.getElementById('confirm-payment');
-    
+
     paymentMethods.forEach(method => {
         method.addEventListener('click', function() {
-            // Remove selected class from all methods
             paymentMethods.forEach(m => m.classList.remove('selected'));
-            
-            // Add selected class to clicked method
             this.classList.add('selected');
-            
-            // Store selected payment method
-            selectedPaymentMethod = this.getAttribute('data-method');
-            
-            // Enable confirm payment button
-            confirmPaymentBtn.disabled = false;
+            selectedPaymentMethod = this.getAttribute('data-method') || null;
+            if (confirmPaymentBtn) confirmPaymentBtn.disabled = !selectedPaymentMethod;
         });
     });
-    
-    // Back to checkout button
+
     const backToCheckoutBtn = document.getElementById('back-to-checkout');
-    if (backToCheckoutBtn) {
-        backToCheckoutBtn.addEventListener('click', () => showSection('checkout'));
-    }
-    
-    // Confirm payment button
+    if (backToCheckoutBtn) backToCheckoutBtn.addEventListener('click', () => showSection('checkout'));
+
     if (confirmPaymentBtn) {
         confirmPaymentBtn.addEventListener('click', function() {
-            if (selectedPaymentMethod) {
-                processPayment(selectedPaymentMethod);
-            }
+            if (selectedPaymentMethod) processPayment(selectedPaymentMethod);
         });
     }
 }
+
 function processPayment(paymentMethod) {
     if (paymentInProgress) return;
-    
-    const firstName = document.getElementById('checkout-first-name').value;
-    const lastName = document.getElementById('checkout-last-name').value;
-    const email = document.getElementById('checkout-email').value;
-    const phone = document.getElementById('checkout-phone').value;
-    const address = document.getElementById('checkout-address').value;
-    
+    paymentInProgress = true;
+
+    const firstName = (document.getElementById('checkout-first-name') || {}).value || '';
+    const lastName = (document.getElementById('checkout-last-name') || {}).value || '';
+    const email = (document.getElementById('checkout-email') || {}).value || '';
+    const phone = (document.getElementById('checkout-phone') || {}).value || '';
+    const address = (document.getElementById('checkout-address') || {}).value || '';
+
     if (!firstName || !lastName || !email || !phone || !address) {
         showNotification('Please fill all checkout details first!');
         showSection('checkout');
+        paymentInProgress = false;
         return;
     }
 
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    // Start payment processing (phone is now retrieved inside sendOTP)
+    const totalAmount = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (item.quantity || 0)), 0);
     startPaymentProcessing(paymentMethod, totalAmount);
 }
 
 function startPaymentProcessing(paymentMethod, amount) {
-    paymentInProgress = true;
-    
-    // Show payment processing modal
     const modal = document.getElementById('payment-processing-modal');
     const paymentAmount = document.getElementById('payment-amount');
     const selectedMethodDisplay = document.getElementById('selected-method-display');
-    
-    paymentAmount.textContent = `₹${amount}`;
-    selectedMethodDisplay.textContent = paymentMethod;
-    
-    modal.style.display = 'flex';
-    
-    // Reset OTP inputs
+
+    if (paymentAmount) paymentAmount.textContent = `₹${Number(amount).toLocaleString()}`;
+    if (selectedMethodDisplay) selectedMethodDisplay.textContent = paymentMethod || 'Unknown';
+
+    if (modal) modal.style.display = 'flex';
+
     resetOTPInputs();
-    
-    // Send OTP to the actual phone number
-    sendOTP();
-    
-    // Start payment flow
+    // generate OTP here (client-side fallback). In production generate server-side
+    generatedOTP = (Math.floor(100000 + Math.random() * 900000)).toString();
+    otpTimeLeft = 120;
+    sendOTP(); // send to email via EmailJS (client) OR server endpoint (recommended)
     simulatePaymentProcess();
 }
 
 function simulatePaymentProcess() {
     let currentStep = 1;
-    
-    // Step 1: Initializing Payment
     updateStep(currentStep);
+
     setTimeout(() => {
         currentStep = 2;
         updateStep(currentStep);
-        
-        // Step 2: Sending OTP (already sent in startPaymentProcessing)
+
         setTimeout(() => {
             showOTPSection();
             startOTPTimer();
-            
             currentStep = 3;
             updateStep(currentStep);
         }, 1500);
-    }, 2000);
+    }, 1000);
 }
 
 function updateStep(stepNumber) {
-    // Reset all steps
-    document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active', 'completed');
-    });
-    
-    // Mark previous steps as completed and current as active
+    // safe update: only update steps that exist
     for (let i = 1; i <= 4; i++) {
         const step = document.getElementById(`step-${i}`);
-        if (i < stepNumber) {
-            step.classList.add('completed');
-        } else if (i === stepNumber) {
-            step.classList.add('active');
-        }
+        if (!step) continue;
+        step.classList.remove('active', 'completed');
+        if (i < stepNumber) step.classList.add('completed');
+        if (i === stepNumber) step.classList.add('active');
     }
 }
 
+// ==================== OTP & EMAIL ====================
 async function sendOTP() {
-    const phone = document.getElementById('checkout-phone').value;
-    const email = document.getElementById('checkout-email').value;
-    
-    // Basic validation
-    if (!phone || phone.length < 10) {
+    const phone = (document.getElementById('checkout-phone') || {}).value || '';
+    const email = (document.getElementById('checkout-email') || {}).value || '';
+
+    if (!phone || phone.replace(/\D/g,'').length < 10) {
         showNotification('Please enter a valid phone number');
-        return;
+        return false;
     }
-    
     if (!email || !email.includes('@')) {
         showNotification('Please enter a valid email address for OTP');
-        return;
+        return false;
     }
 
-    // Generate random 6-digit OTP
-    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-    
     try {
         showNotification('Sending OTP to your email...');
-        
-        // Send OTP via Email
+        // NOTE: This uses EmailJS client API. Prefer server route to keep keys secret.
         const success = await sendOTPViaEmail(email, generatedOTP, phone);
-        
         if (success) {
             showNotification(`OTP sent to ${email}`);
-            console.log('OTP sent via email:', generatedOTP);
+            console.log('OTP sent (debug):', generatedOTP);
         } else {
-            throw new Error('Failed to send OTP email');
+            throw new Error('Email send failed');
         }
-    } catch (error) {
-        console.error('Email OTP failed:', error);
-        // Fallback to on-screen display
-        showNotification(`OTP: ${generatedOTP} - Enter this to continue`);
-        console.log('OTP:', generatedOTP, 'for email:', email);
+    } catch (err) {
+        console.error('sendOTP error:', err);
+        // Fallback: show OTP on screen (only for dev)
+        showNotification(`DEV OTP: ${generatedOTP}`);
+        console.log('DEV OTP:', generatedOTP);
     }
-    
-    // Update mobile ending display (now shows email)
+
     const mobileEnding = document.getElementById('mobile-ending');
     if (mobileEnding) {
-        mobileEnding.textContent = email.split('@')[0].slice(-4) + '...';
+        const prefix = email.split('@')[0] || '';
+        mobileEnding.textContent = (prefix.length <= 4) ? prefix + '...' : prefix.slice(-4) + '...';
     }
+    return true;
 }
 
-// EmailJS integration for OTP
+// EmailJS integration (client). Replace keys or use server endpoint.
 async function sendOTPViaEmail(email, otp, phone) {
-    const serviceID = 'service_b8qp1sx';           // ← Use default_service or your actual service ID
-    const templateID = 'template_qrr7x97';         // Your OTP template
-    const userID = 'S0ZGmLq5Zma9ehfkj';            // Your public key
+    const serviceID = 'service_b8qp1sx';
+    const templateID = 'template_qrr7x97';
+    const userID = 'S0ZGmLq5Zma9ehfkj';
 
-    
     try {
         const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: serviceID,
                 template_id: templateID,
                 user_id: userID,
                 template_params: {
-                    'user_email': email,
-                    'otp_code': otp,
-                    'phone_number': phone,
-                    'company_name': 'Shree Siddhivinayak Creation',
-                    'current_year': new Date().getFullYear()
+                    user_email: email,
+                    otp_code: otp,
+                    phone_number: phone,
+                    company_name: 'Shree Siddhivinayak Creation',
+                    current_year: new Date().getFullYear()
                 }
             })
         });
-        
-        return response.ok;
+        return response && response.ok;
     } catch (error) {
-        console.error('EmailJS error:', error);
+        console.error('EmailJS error', error);
         return false;
     }
 }
 
-// TextLocal integration
-async function sendOTPViaTextLocal(phoneNumber, otp) {
-    const apiKey = 'YOUR_TEXTLOCAL_API_KEY'; // Get from textlocal.in
-    const sender = 'TXTLCL'; // Your sender ID
-    
-    const message = `Your OTP for Shree Siddhivinayak Creation is: ${otp}. Order confirmation will be sent separately.`;
-    
-    const response = await fetch('https://api.textlocal.in/send/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            apikey: apiKey,
-            numbers: phoneNumber,
-            message: message,
-            sender: sender
-        })
-    });
-    
-    const result = await response.json();
-    return {
-        success: result.status === 'success',
-        message: result.status === 'success' ? 'OTP sent successfully' : result.errors?.[0]?.message
-    };
-}
-
-// Send order confirmation via Email
+// Send order confirmation
 async function sendOrderConfirmation(email, orderDetails) {
+    if (!email) return false;
+    const serviceID = 'service_b8qp1sx';
+    const templateID = 'template_bz6fy8r';
+    const userID = 'S0ZGmLq5Zma9ehfkj';
 
-    const serviceID = 'service_b8qp1sx';           // ← Use default_service or your actual service ID
-    const templateID = 'template_bz6fy8r';         // Your order template
-    const userID = 'S0ZGmLq5Zma9ehfkj';            // Your public key
-    
     try {
         const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: serviceID,
                 template_id: templateID,
                 user_id: userID,
                 template_params: {
-                    'user_email': email,
-                    'order_id': orderDetails.orderId,
-                    'order_amount': orderDetails.amount,
-                    'order_date': new Date().toLocaleDateString(),
-                    'company_name': 'Shree Siddhivinayak Creation',
-                    'customer_name': document.getElementById('checkout-first-name').value + ' ' + document.getElementById('checkout-last-name').value
+                    user_email: email,
+                    order_id: orderDetails.orderId,
+                    order_amount: orderDetails.amount,
+                    order_date: new Date().toLocaleDateString(),
+                    company_name: 'Shree Siddhivinayak Creation',
+                    customer_name: (document.getElementById('checkout-first-name') || {}).value + ' ' + (document.getElementById('checkout-last-name') || {}).value
                 }
             })
         });
-        
         console.log('Order confirmation email sent:', response.ok);
         return response.ok;
     } catch (error) {
@@ -500,36 +1492,36 @@ async function sendOrderConfirmation(email, orderDetails) {
     }
 }
 
+// ==================== OTP UI HANDLING ====================
 function showOTPSection() {
     const otpSection = document.getElementById('otp-section');
+    if (!otpSection) return;
     otpSection.style.display = 'block';
-    
-    // Focus on first OTP input
     setTimeout(() => {
-        document.getElementById('otp-1').focus();
+        const first = document.getElementById('otp-1');
+        first && first.focus();
     }, 100);
 }
 
 function startOTPTimer() {
-    let timeLeft = 120; // 2 minutes in seconds
     const timerElement = document.getElementById('otp-timer');
     const resendButton = document.getElementById('resend-otp');
-    
-    // Clear any existing timer
+    if (!timerElement || !resendButton) return;
+
+    // clear old timer
     if (otpTimer) clearInterval(otpTimer);
-    
-    // Enable OTP verification immediately
-    document.getElementById('verify-otp').disabled = false;
-    
+    otpTimeLeft = 120;
+    resendButton.disabled = true;
+    resendButton.textContent = 'Resend OTP (02:00)';
+
     otpTimer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        timeLeft--;
-        
-        if (timeLeft < 0) {
+        otpTimeLeft--;
+        const minutes = Math.floor(otpTimeLeft / 60);
+        const seconds = otpTimeLeft % 60;
+        timerElement.textContent = `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+        if (otpTimeLeft <= 0) {
             clearInterval(otpTimer);
+            otpTimer = null;
             resendButton.disabled = false;
             resendButton.textContent = 'Resend OTP';
             showNotification('OTP has expired. Please request a new one.');
@@ -554,88 +1546,75 @@ function resetOTPInputs() {
 
 // ==================== OTP INPUT HANDLING ====================
 function setupOTPInputHandling() {
-    // Setup OTP input event listeners
     for (let i = 1; i <= 6; i++) {
         const input = document.getElementById(`otp-${i}`);
-        if (input) {
-            input.addEventListener('input', handleOTPInput);
-            input.addEventListener('keydown', handleOTPKeydown);
-            input.addEventListener('paste', handleOTPPaste);
-        }
+        if (!input) continue;
+        input.addEventListener('input', handleOTPInput);
+        input.addEventListener('keydown', handleOTPKeydown);
+        input.addEventListener('paste', handleOTPPaste);
     }
-    
-    // Verify OTP button
+
     const verifyOTPBtn = document.getElementById('verify-otp');
-    if (verifyOTPBtn) {
-        verifyOTPBtn.addEventListener('click', verifyOTP);
-    }
-    
-    // Resend OTP button
+    verifyOTPBtn && verifyOTPBtn.addEventListener('click', verifyOTP);
+
     const resendOTPBtn = document.getElementById('resend-otp');
     if (resendOTPBtn) {
-        resendOTPBtn.addEventListener('click', resendOTP);
+        resendOTPBtn.addEventListener('click', function() {
+            // prevent spam
+            if (resendOTPBtn.disabled) return;
+            resendOTPBtn.disabled = true;
+            resendOTPBtn.textContent = 'Resending...';
+            resetOTPInputs();
+            generatedOTP = (Math.floor(100000 + Math.random() * 900000)).toString();
+            sendOTP().then(() => {
+                resetOTPTimer();
+                setTimeout(() => {
+                    resendOTPBtn.textContent = 'Resend OTP';
+                    document.getElementById('otp-1') && document.getElementById('otp-1').focus();
+                }, 1500);
+            }).catch(() => {
+                resendOTPBtn.disabled = false;
+                resendOTPBtn.textContent = 'Resend OTP';
+            });
+        });
     }
-    
-    // Cancel payment button
+
     const cancelPaymentBtn = document.getElementById('cancel-payment');
-    if (cancelPaymentBtn) {
-        cancelPaymentBtn.addEventListener('click', closePaymentModal);
-    }
-    
-    // Close modal button
+    cancelPaymentBtn && cancelPaymentBtn.addEventListener('click', closePaymentModal);
+
     const closeModalBtn = document.getElementById('close-payment-modal');
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closePaymentModal);
-    }
+    closeModalBtn && closeModalBtn.addEventListener('click', closePaymentModal);
 }
 
 function handleOTPInput(event) {
     const input = event.target;
-    const value = input.value;
-    const index = parseInt(input.getAttribute('data-index'));
-    
-    // Allow only numbers
-    const numericValue = value.replace(/[^0-9]/g, '');
-    input.value = numericValue;
-    
-    // Update filled class
-    if (numericValue) {
-        input.classList.add('filled');
-    } else {
-        input.classList.remove('filled');
-    }
-    
-    // Remove error class when user types
+    const numericValue = (input.value || '').replace(/[^0-9]/g, '');
+    input.value = numericValue.slice(0,1);
+    if (numericValue) input.classList.add('filled'); else input.classList.remove('filled');
     input.classList.remove('error');
-    
-    // Auto move to next input
+
+    const index = parseInt(input.getAttribute('data-index') || '1', 10);
     if (numericValue.length === 1 && index < 6) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
-        if (nextInput) nextInput.focus();
+        const next = document.getElementById(`otp-${index + 1}`);
+        next && next.focus();
     }
-    
-    // Auto verify when all inputs are filled
-    if (index === 6 && numericValue.length === 1) {
-        setTimeout(() => {
-            if (isOTPComplete()) {
-                verifyOTP();
-            }
-        }, 100);
+
+    if (isOTPComplete()) {
+        // auto verify after short delay
+        setTimeout(() => verifyOTP(), 150);
     }
 }
 
 function handleOTPKeydown(event) {
     const input = event.target;
-    const value = input.value;
-    const index = parseInt(input.getAttribute('data-index'));
-    
+    const index = parseInt(input.getAttribute('data-index') || '1',10);
     if (event.key === 'Backspace') {
-        if (value.length === 0 && index > 1) {
-            const prevInput = document.getElementById(`otp-${index - 1}`);
-            if (prevInput) {
-                prevInput.focus();
-                prevInput.value = '';
-                prevInput.classList.remove('filled');
+        if (!input.value && index > 1) {
+            const prev = document.getElementById(`otp-${index - 1}`);
+            if (prev) {
+                prev.focus();
+                prev.value = '';
+                prev.classList.remove('filled');
             }
         }
     }
@@ -643,48 +1622,40 @@ function handleOTPKeydown(event) {
 
 function handleOTPPaste(event) {
     event.preventDefault();
-    const pasteData = event.clipboardData.getData('text').slice(0, 6);
-    const numericData = pasteData.replace(/[^0-9]/g, '');
-    
-    if (numericData.length === 6) {
-        for (let i = 0; i < 6; i++) {
-            const input = document.getElementById(`otp-${i + 1}`);
-            if (input) {
-                input.value = numericData[i];
-                input.classList.add('filled');
-            }
+    const pasted = (event.clipboardData.getData('text') || '').replace(/[^0-9]/g,'').slice(0,6);
+    if (!pasted) return;
+    for (let i = 0; i < pasted.length; i++) {
+        const input = document.getElementById(`otp-${i+1}`);
+        if (input) {
+            input.value = pasted[i];
+            input.classList.add('filled');
         }
-        // Focus last input and verify
-        document.getElementById('otp-6').focus();
-        setTimeout(verifyOTP, 100);
     }
+    const last = document.getElementById('otp-6');
+    last && last.focus();
+    setTimeout(() => verifyOTP(), 150);
 }
 
 function isOTPComplete() {
     for (let i = 1; i <= 6; i++) {
         const input = document.getElementById(`otp-${i}`);
-        if (!input || input.value.length !== 1) {
-            return false;
-        }
+        if (!input || input.value.length !== 1) return false;
     }
     return true;
 }
 
 function verifyOTP() {
     const enteredOTP = getEnteredOTP();
-    
     if (enteredOTP.length !== 6) {
         showNotification('Please enter complete 6-digit OTP');
         showOTPError();
         return;
     }
-    
-    // For demo purposes, accept any 6-digit OTP
-    if (enteredOTP.length === 6) {
-        // OTP verified successfully
+
+    // Real check: compare with generatedOTP
+    if (generatedOTP && enteredOTP === generatedOTP) {
         completePaymentProcess();
     } else {
-        // Invalid OTP
         showOTPError();
         showNotification('Invalid OTP. Please try again.');
     }
@@ -694,104 +1665,86 @@ function getEnteredOTP() {
     let otp = '';
     for (let i = 1; i <= 6; i++) {
         const input = document.getElementById(`otp-${i}`);
-        if (input) {
-            otp += input.value;
-        }
+        otp += (input && input.value) || '';
     }
     return otp;
 }
 
 function showOTPError() {
-    // Add error class to all OTP inputs
     for (let i = 1; i <= 6; i++) {
         const input = document.getElementById(`otp-${i}`);
-        if (input) {
-            input.classList.add('error');
-        }
+        if (input) input.classList.add('error');
     }
-    
-    // Shake animation for error
     const otpContainer = document.querySelector('.otp-input-container');
-    if (otpContainer) {
-        otpContainer.style.animation = 'shake 0.5s ease';
-        setTimeout(() => {
-            otpContainer.style.animation = '';
-        }, 500);
-    }
+    if (!otpContainer) return;
+    otpContainer.style.animation = 'shake 0.5s ease';
+    setTimeout(() => otpContainer.style.animation = '', 500);
 }
 
+// ==================== COMPLETE / RESEND / CANCEL ====================
 function completePaymentProcess() {
-    if (otpTimer) clearInterval(otpTimer);
-    
-    // Update to final step
+    if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
+
     updateStep(4);
-    
-    // Show success state
+
     setTimeout(() => {
         const modal = document.getElementById('payment-processing-modal');
-        const modalContent = modal.querySelector('.modal-content');
-        
+        if (!modal) return;
+        const modalContent = modal.querySelector('.modal-content') || modal;
+        const amountText = (document.getElementById('payment-amount') || {}).textContent || '₹0';
+        const displayAmount = amountText.replace('₹','').trim();
         modalContent.innerHTML = `
             <div class="payment-success" style="text-align: center; padding: 30px;">
                 <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--accent-gold); margin-bottom: 20px;"></i>
                 <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Payment Successful!</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 10px;">Your payment of ₹${document.getElementById('payment-amount').textContent.slice(1)} has been processed successfully.</p>
+                <p style="color: var(--text-secondary); margin-bottom: 10px;">Your payment of ₹${displayAmount} has been processed successfully.</p>
                 <p style="color: var(--text-secondary); margin-bottom: 25px;">Order confirmation has been sent to your email.</p>
                 <button class="btn" id="close-payment-success" style="margin-top: 15px;">Continue Shopping</button>
             </div>
         `;
-        
-        // Add event listener for continue button
-        document.getElementById('close-payment-success').addEventListener('click', () => {
+        const contBtn = document.getElementById('close-payment-success');
+        if (contBtn) {
+            contBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                completeOrder();
+                paymentInProgress = false;
+            });
+        } else {
+            // fallback: complete and close
             modal.style.display = 'none';
             completeOrder();
             paymentInProgress = false;
-        });
-        
-    }, 1000);
+        }
+    }, 800);
 }
 
 function resendOTP() {
+    // legacy hook (now handled in setupOTPInputHandling)
     const resendButton = document.getElementById('resend-otp');
+    if (!resendButton || resendButton.disabled) return;
     resendButton.disabled = true;
     resendButton.textContent = 'Resending...';
-    
     resetOTPInputs();
-    sendOTP(); // This will now use the actual phone number
-    resetOTPTimer();
-    
-    setTimeout(() => {
-        resendButton.textContent = 'Resend OTP';
-        document.getElementById('otp-1').focus();
-        // Notification is already shown in sendOTP()
-    }, 2000);
+    generatedOTP = (Math.floor(100000 + Math.random() * 900000)).toString();
+    sendOTP().then(() => resetOTPTimer()).finally(() => {
+        setTimeout(() => {
+            resendButton.textContent = 'Resend OTP';
+            document.getElementById('otp-1') && document.getElementById('otp-1').focus();
+        }, 1200);
+    });
 }
 
 function closePaymentModal() {
     const modal = document.getElementById('payment-processing-modal');
-    modal.style.display = 'none';
-    
-    // Reset payment state
+    if (modal) modal.style.display = 'none';
     paymentInProgress = false;
-    
-    // Clear OTP timer
-    if (otpTimer) {
-        clearInterval(otpTimer);
-        otpTimer = null;
-    }
-    
-    // Reset OTP inputs
+    if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
     resetOTPInputs();
-    
-    // Reset steps
-    document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active', 'completed');
-    });
-    document.getElementById('step-1').classList.add('active');
-    
-    // Hide OTP section
-    document.getElementById('otp-section').style.display = 'none';
-    
+    document.querySelectorAll('.step').forEach(step => step.classList.remove('active', 'completed'));
+    const s1 = document.getElementById('step-1');
+    if (s1) s1.classList.add('active');
+    const otpSection = document.getElementById('otp-section');
+    if (otpSection) otpSection.style.display = 'none';
     showNotification('Payment cancelled');
 }
 
@@ -799,190 +1752,143 @@ function closePaymentModal() {
 function displayProducts(products) {
     const container = document.getElementById('products-container');
     if (!container) return;
-    
-    container.innerHTML = products.map(product => `
-        <div class="product-card" data-category="${product.category}">
-            <div class="product-image-container">
-                <img src="${product.images[0]}" alt="${product.name}" class="product-image" data-product-image="true" onerror="this.src='https://via.placeholder.com/300x400/1a1a1a/d4af37?text=${encodeURIComponent(product.name)}'">
-                <div class="product-overlay">
-                    <button class="btn view-details-btn" data-product-id="${product._id}">Quick View</button>
-                </div>
-            </div>
-            <div class="product-info">
-                <div class="product-category-badge">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
-                <h3 class="product-title">${product.name}</h3>
-                <p class="product-description">${product.description}</p>
-                <div class="product-features">
-                    <span class="size-badge">${product.sizes.join(', ')}</span>
-                    <span class="color-badge">${product.colors.length} colors</span>
-                </div>
-                <div class="product-price-section">
-                    <p class="product-price">₹${product.price.toLocaleString()}</p>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                        <span class="rating-text">(4.5)</span>
+    container.innerHTML = (products || []).map(product => {
+        const imageSrc = (product.images && product.images[0]) || `https://via.placeholder.com/300x400?text=${encodeURIComponent(product.name || 'Product')}`;
+        return `
+            <div class="product-card" data-category="${product.category || 'all'}">
+                <div class="product-image-container">
+                    <img src="${imageSrc}" alt="${product.name || ''}" class="product-image" data-product-image="true" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+                    <div class="product-overlay">
+                        <button class="btn view-details-btn" data-product-id="${product._id}">Quick View</button>
                     </div>
                 </div>
-                <div class="product-actions">
-                    <button class="btn add-to-cart-btn" data-product-id="${product._id}">
-                        <i class="fas fa-shopping-bag"></i>
-                        Add to Cart
-                    </button>
-                    <button class="wishlist-btn" title="Add to Wishlist">
-                        <i class="far fa-heart"></i>
-                    </button>
+                <div class="product-info">
+                    <div class="product-category-badge">${(product.category || '').charAt(0).toUpperCase() + (product.category || '').slice(1)}</div>
+                    <h3 class="product-title">${product.name || ''}</h3>
+                    <p class="product-description">${product.description || ''}</p>
+                    <div class="product-features">
+                        <span class="size-badge">${(product.sizes || []).join(', ')}</span>
+                        <span class="color-badge">${(product.colors || []).length} colors</span>
+                    </div>
+                    <div class="product-price-section">
+                        <p class="product-price">₹${Number(product.price || 0).toLocaleString()}</p>
+                        <div class="rating">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            <span class="rating-text">(4.5)</span>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn add-to-cart-btn" data-product-id="${product._id}">
+                            <i class="fas fa-shopping-bag"></i> Add to Cart
+                        </button>
+                        <button class="wishlist-btn" title="Add to Wishlist"><i class="far fa-heart"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function filterProducts(category) {
-    const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
+    const filtered = (category === 'all') ? allProducts : (allProducts || []).filter(p => p.category === category);
     displayProducts(filtered);
-    
-    // Update active filter button with smooth animation
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.getAttribute('data-category') === category) {
-            btn.classList.add('active');
-        }
+        if (btn.getAttribute('data-category') === category) btn.classList.add('active');
     });
-    
-    // Add smooth scroll to products
     const productsSection = document.getElementById('products-section');
-    if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (productsSection) productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ==================== UTILITY FUNCTIONS ====================
+// ==================== UTILITIES ====================
 function showNotification(message) {
-    // Remove existing notification
+    if (!message) return;
     const existing = document.querySelector('.notification');
     if (existing) existing.remove();
-
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.textContent = message;
     notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--accent-maroon);
-        color: white;
-        padding: 15px 20px;
-        border-radius: var(--border-radius);
-        z-index: 1000;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        animation: slideIn 0.3s ease;
+        position: fixed; top: 20px; right: 20px; background: var(--accent-maroon); color: white;
+        padding: 15px 20px; border-radius: var(--border-radius); z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: slideIn 0.3s ease;
     `;
     document.body.appendChild(notification);
-
     setTimeout(() => {
-        if (notification.parentNode) {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }
+        if (!notification.parentNode) return;
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => { if (notification.parentNode) document.body.removeChild(notification); }, 300);
     }, 3000);
 }
 
 // ==================== EVENT DELEGATION ====================
 function setupEventDelegation() {
-    // Event delegation for dynamically created elements
     document.addEventListener('click', function(e) {
         const target = e.target;
-        
-        // Add to cart buttons
-        if (target.classList.contains('add-to-cart-btn')) {
-            const productId = target.getAttribute('data-product-id');
-            addToCart(productId);
+        // normalize: if icon or element inside button clicked, climb to button
+        const btn = target.closest && target.closest('[data-product-id], .add-to-cart-btn, .btn-quantity, .remove-btn, [data-product-image="true"]');
+        if (btn) {
+            // add-to-cart
+            if (btn.classList && btn.classList.contains('add-to-cart-btn')) {
+                addToCart(btn.getAttribute('data-product-id'));
+                return;
+            }
+            // quantity
+            if (btn.classList && btn.classList.contains('btn-quantity')) {
+                const productId = btn.getAttribute('data-product-id');
+                const action = btn.getAttribute('data-action');
+                updateQuantity(productId, action === 'increase' ? 1 : -1);
+                return;
+            }
+            // remove
+            if (btn.classList && btn.classList.contains('remove-btn')) {
+                removeFromCart(btn.getAttribute('data-product-id'));
+                return;
+            }
+            // image open modal
+            if (btn.hasAttribute && btn.hasAttribute('data-product-image')) {
+                openModal(btn);
+                return;
+            }
         }
-        
-        // Quantity buttons in cart
-        if (target.classList.contains('btn-quantity')) {
-            const productId = target.getAttribute('data-product-id');
-            const action = target.getAttribute('data-action');
-            const change = action === 'increase' ? 1 : -1;
-            updateQuantity(productId, change);
-        }
-        
-        // Remove from cart buttons
-        if (target.classList.contains('remove-btn')) {
-            const productId = target.getAttribute('data-product-id');
-            removeFromCart(productId);
-        }
-        
-        // Product images for modal
-        if (target.hasAttribute('data-product-image')) {
-            openModal(target);
-        }
-        
-        // Close modal when clicking outside
-        if (target.id === 'imageModal') {
-            closeModal();
-        }
+
+        // click outside image modal closes
+        if (target.id === 'imageModal') closeModal();
     });
 }
 
 // ==================== EVENT LISTENER SETUP ====================
 function setupEventListeners() {
-    // Place Order Button
     const placeOrderBtn = document.getElementById('place-order-btn');
-    if (placeOrderBtn) {
-        placeOrderBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            placeOrder();
-        });
-    }
+    placeOrderBtn && placeOrderBtn.addEventListener('click', function(e) { e.preventDefault(); placeOrder(); });
 
-    // Cart icon
     const cartIcon = document.getElementById('cart-icon');
-    if (cartIcon) cartIcon.addEventListener('click', () => showSection('cart'));
+    cartIcon && cartIcon.addEventListener('click', () => showSection('cart'));
 
-    // Checkout button
     const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) checkoutBtn.addEventListener('click', showCheckout);
+    checkoutBtn && checkoutBtn.addEventListener('click', showCheckout);
 
-    // Continue shopping
     const continueShopping = document.getElementById('continue-shopping');
-    if (continueShopping) continueShopping.addEventListener('click', () => showSection('home'));
+    continueShopping && continueShopping.addEventListener('click', () => showSection('home'));
 
-    // Close image modal
     const closeImageModalBtn = document.getElementById('close-image-modal');
-    if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeModal);
+    closeImageModalBtn && closeImageModalBtn.addEventListener('click', closeModal);
 
-    // Shop now button
     const shopNowBtn = document.getElementById('shop-now-btn');
-    if (shopNowBtn) shopNowBtn.addEventListener('click', () => showSection('products'));
+    shopNowBtn && shopNowBtn.addEventListener('click', () => showSection('products'));
 
-    // Our story button
     const ourStoryBtn = document.getElementById('our-story-btn');
-    if (ourStoryBtn) ourStoryBtn.addEventListener('click', () => showSection('about'));
+    ourStoryBtn && ourStoryBtn.addEventListener('click', () => showSection('about'));
 
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const category = this.getAttribute('data-category');
-            filterProducts(category);
-        });
-    });
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', function() {
+        filterProducts(this.getAttribute('data-category'));
+    }));
 
-    // Mobile menu
     const mobileToggle = document.getElementById('mobile-toggle');
-    if (mobileToggle) mobileToggle.addEventListener('click', function() {
-        document.querySelector('.nav-menu').classList.toggle('active');
+    mobileToggle && mobileToggle.addEventListener('click', function() {
+        const nav = document.querySelector('.nav-menu');
+        nav && nav.classList.toggle('active');
     });
 
-    // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -991,111 +1897,37 @@ function setupEventListeners() {
         });
     });
 
-    // Payment setup
     setupPaymentSelection();
     setupOTPInputHandling();
-    
-    // Event delegation for dynamic elements
     setupEventDelegation();
 }
 
 // ==================== INITIALIZATION ====================
 function init() {
-    // Load sample products - MEN'S CLOTHING ONLY with LOCAL IMAGES
+    // sample products
     allProducts = [
-        {
-            _id: '1',
-            name: 'Navy Blue Silk Kurta',
-            description: 'Premium silk kurta with traditional embroidery',
-            price: 3499,
-            category: 'kurtas',
-            images: ['uploads/kurta1.jpg'],
-            sizes: ['S', 'M', 'L', 'XL'],
-            colors: ['Navy Blue']
-        },
-        {
-            _id: '2',
-            name: 'White Chikan Kurta',
-            description: 'Handcrafted chikan work on premium cotton',
-            price: 5899,
-            category: 'kurtas',
-            images: ['uploads/kurta2.jpg'],
-            sizes: ['S', 'M', 'L', 'XL'],
-            colors: ['White', 'Off-White']
-        },
-        {
-            _id: '3',
-            name: 'Royal Maroon Sherwani',
-            description: 'Regal sherwani with golden embroidery for weddings',
-            price: 10999,
-            category: 'sherwanis',
-            images: ['uploads/shervani.jpg'],
-            sizes: ['M', 'L', 'XL', 'XXL'],
-            colors: ['Maroon', 'Red']
-        },
-        {
-            _id: '4',
-            name: 'Designer Indo-Western Suit',
-            description: 'Contemporary fusion wear with traditional touch',
-            price: 15399,
-            category: 'modern',
-            images: ['uploads/Indowestern.jpg'],
-            sizes: ['S', 'M', 'L', 'XL'],
-            colors: ['Black', 'Grey', 'Navy']
-        },
-        {
-            _id: '5',
-            name: 'Traditional Dhoti Kurta Set',
-            description: 'Complete traditional attire for festivals',
-            price: 4599,
-            category: 'traditional',
-            images: ['uploads/dhotikurta.jpg'],
-            sizes: ['M', 'L', 'XL'],
-            colors: ['White', 'Cream']
-        },
-        {
-            _id: '6',
-            name: 'Embroidered Jodhpuri Suit',
-            description: 'Classic Jodhpuri style with intricate embroidery',
-            price: 14999,
-            category: 'modern',
-            images: ['uploads/jodhpuri.jpg'],
-            sizes: ['S', 'M', 'L', 'XL'],
-            colors: ['Blue', 'Black']
-        }
+        {_id:'1', name:'Navy Blue Silk Kurta', description:'Premium silk kurta with traditional embroidery', price:3499, category:'kurtas', images:['uploads/kurta1.jpg'], sizes:['S','M','L','XL'], colors:['Navy Blue']},
+        {_id:'2', name:'White Chikan Kurta', description:'Handcrafted chikan work', price:5899, category:'kurtas', images:['uploads/kurta2.jpg'], sizes:['S','M','L','XL'], colors:['White','Off-White']},
+        {_id:'3', name:'Royal Maroon Sherwani', description:'Regal sherwani', price:10999, category:'sherwanis', images:['uploads/shervani.jpg'], sizes:['M','L','XL','XXL'], colors:['Maroon','Red']},
+        {_id:'4', name:'Designer Indo-Western Suit', description:'Contemporary fusion wear', price:15399, category:'modern', images:['uploads/Indowestern.jpg'], sizes:['S','M','L','XL'], colors:['Black','Grey','Navy']},
+        {_id:'5', name:'Traditional Dhoti Kurta Set', description:'Complete traditional attire', price:4599, category:'traditional', images:['uploads/dhotikurta.jpg'], sizes:['M','L','XL'], colors:['White','Cream']},
+        {_id:'6', name:'Embroidered Jodhpuri Suit', description:'Classic Jodhpuri style', price:14999, category:'modern', images:['uploads/jodhpuri.jpg'], sizes:['S','M','L','XL'], colors:['Blue','Black']}
     ];
-    
+
     setupEventListeners();
     displayProducts(allProducts);
     updateCartCount();
     showSection('home');
 }
 
-// Add required CSS animations
+// CSS animations injection (unchanged behaviour)
 const style = document.createElement('style');
 style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(300px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(300px); opacity: 0; }
-    }
-    
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
-    }
-    
-    .otp-input.error {
-        border-color: #dc3545 !important;
-        background: rgba(220, 53, 69, 0.1) !important;
-    }
+    @keyframes slideIn { from { transform: translateX(300px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(300px); opacity: 0; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    .otp-input.error { border-color: #dc3545 !important; background: rgba(220, 53, 69, 0.1) !important; }
 `;
 document.head.appendChild(style);
 
-// Start everything when page loads
 document.addEventListener('DOMContentLoaded', init);

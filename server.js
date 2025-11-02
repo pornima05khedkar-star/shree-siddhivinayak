@@ -29,18 +29,19 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ Connected to MongoDB Atlas!'))
-.catch(err => {
-  console.log('❌ MongoDB connection error:', err.message);
-  console.log('🔧 Continuing in demo mode...');
-});
+  .then(() => console.log('✅ Connected to MongoDB Atlas!'))
+  .catch(err => {
+    console.log('❌ MongoDB connection error:', err.message);
+    console.log('🔧 Continuing in demo mode...');
+  });
 
 // Import models
 const Product = require('./models/Product');
 const Order = require('./models/Order');
 
 // Serve uploaded files
-app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // ==================== API ROUTES ====================
 
@@ -119,21 +120,19 @@ app.post('/api/orders', async (req, res) => {
       status: 'confirmed',
       paymentStatus: 'completed'
     });
-    
+
     await order.save(); // Saves to real database
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       message: 'Order placed successfully!',
-      orderId: order._id 
+      orderId: order._id
     });
   } catch (error) {
     console.log('❌ Order save error:', error);
-    // Fallback - still return success
-    res.json({ 
-      success: true, 
-      message: 'Order placed successfully!',
-      orderId: 'DEMO-' + Date.now()
+    return res.status(500).json({
+      success: false,
+      message: 'Order failed, please try again',
     });
   }
 });
@@ -149,23 +148,23 @@ app.get('/api/orders', async (req, res) => {
 });
 
 // Admin login
-app.post('/api/admin/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === 'admin' && password === 'admin123') {
-    res.json({ 
-      success: true, 
-      message: 'Login successful!',
-      user: { username: 'admin', role: 'admin' }
-    });
-  } else {
-    res.status(401).json({ success: false, message: 'Invalid credentials' });
-  }
-});
+// app.post('/api/admin/login', (req, res) => {
+//   const { username, password } = req.body;
+//   if (username === 'admin' && password === 'admin123') {
+//     res.json({ 
+//       success: true, 
+//       message: 'Login successful!',
+//       user: { username: 'admin', role: 'admin' }
+//     });
+//   } else {
+//     res.status(401).json({ success: false, message: 'Invalid credentials' });
+//   }
+// });
 
-// Serve frontend for all other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// // Serve frontend for all other routes
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'index.html'));
+// });
 
 // Start the restaurant!
 app.listen(PORT, () => {
