@@ -38,6 +38,14 @@ function showSection(sectionName) {
         section.style.display = 'none';
     });
     
+    // Update active navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-section') === sectionName) {
+            link.classList.add('active');
+        }
+    });
+    
     // Show selected section
     const targetSection = document.getElementById(sectionName + '-section');
     if (targetSection) {
@@ -48,20 +56,6 @@ function showSection(sectionName) {
     // Special handling for cart
     if (sectionName === 'cart') {
         showCart();
-    }
-}
-
-function showAdminLogin() {
-    const modal = document.getElementById('admin-login-modal');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-}
-
-function closeAdminModal() {
-    const modal = document.getElementById('admin-login-modal');
-    if (modal) {
-        modal.style.display = 'none';
     }
 }
 
@@ -123,12 +117,13 @@ function setupPaymentSelection() {
 function processPayment(paymentMethod) {
     if (paymentInProgress) return;
     
-    const name = document.getElementById('checkout-name').value;
+    const firstName = document.getElementById('checkout-first-name').value;
+    const lastName = document.getElementById('checkout-last-name').value;
     const email = document.getElementById('checkout-email').value;
     const phone = document.getElementById('checkout-phone').value;
     const address = document.getElementById('checkout-address').value;
     
-    if (!name || !email || !phone || !address) {
+    if (!firstName || !lastName || !email || !phone || !address) {
         showNotification('Please fill all checkout details first!');
         showSection('checkout');
         return;
@@ -514,13 +509,14 @@ function showCheckout() {
 
 // SIMPLE PLACE ORDER FUNCTION - FIXED!
 function placeOrder() {
-    const name = document.getElementById('checkout-name').value;
+    const firstName = document.getElementById('checkout-first-name').value;
+    const lastName = document.getElementById('checkout-last-name').value;
     const email = document.getElementById('checkout-email').value;
     const phone = document.getElementById('checkout-phone').value;
     const address = document.getElementById('checkout-address').value;
     
     // Validation
-    if (!name || !email || !phone || !address) {
+    if (!firstName || !lastName || !email || !phone || !address) {
         showNotification('Please fill all fields!');
         return;
     }
@@ -530,11 +526,17 @@ function placeOrder() {
 }
 
 function completeOrder(paymentMethod, amount) {
+    const firstName = document.getElementById('checkout-first-name').value;
+    const lastName = document.getElementById('checkout-last-name').value;
+    const email = document.getElementById('checkout-email').value;
+    const phone = document.getElementById('checkout-phone').value;
+    const address = document.getElementById('checkout-address').value;
+
     const orderData = {
-        customerName: document.getElementById('checkout-name').value,
-        customerEmail: document.getElementById('checkout-email').value,
-        customerPhone: document.getElementById('checkout-phone').value,
-        customerAddress: document.getElementById('checkout-address').value,
+        customerName: `${firstName} ${lastName}`,
+        customerEmail: email,
+        customerPhone: phone,
+        customerAddress: address,
         items: cart,
         totalAmount: amount,
         paymentMethod: paymentMethod,
@@ -558,141 +560,79 @@ function completeOrder(paymentMethod, amount) {
     updateCartCount();
     
     // Clear form
-    document.getElementById('checkout-name').value = '';
+    document.getElementById('checkout-first-name').value = '';
+    document.getElementById('checkout-last-name').value = '';
     document.getElementById('checkout-email').value = '';
     document.getElementById('checkout-phone').value = '';
     document.getElementById('checkout-address').value = '';
     
     showSection('order-success');
 }
-
-// ==================== ADMIN FUNCTIONS ====================
-function adminLogin() {
-    const username = document.getElementById('admin-username').value;
-    const password = document.getElementById('admin-password').value;
-
-    if (username === 'admin' && password === 'admin123') {
-        closeAdminModal();
-        showSection('admin');
-        showNotification('Admin login successful!');
-        loadAdminData();
-    } else {
-        showNotification('Login failed! Use admin/admin123');
-    }
-}
-
-function addProduct() {
-    const name = document.getElementById('product-name').value;
-    const description = document.getElementById('product-description').value;
-    const price = document.getElementById('product-price').value;
-    const category = document.getElementById('product-category').value;
-    
-    if (!name || !description || !price) {
-        showNotification('Please fill all fields!');
-        return;
-    }
-    
-    // Choose appropriate image based on category
-    let defaultImage = '/uploads/kurta1.jpg';
-    if (category === 'sherwanis') defaultImage = '/uploads/shervani.jpg';
-    else if (category === 'modern') defaultImage = '/uploads/Indowestern.jpg';
-    else if (category === 'traditional') defaultImage = '/uploads/dhotikurta.jpg';
-    
-    const newProduct = {
-        _id: Date.now().toString(),
-        name,
-        description,
-        price: parseFloat(price),
-        category,
-        images: [defaultImage],
-        sizes: ['S', 'M', 'L', 'XL'],
-        colors: ['Blue', 'Black', 'White', 'Maroon']
-    };
-    
-    allProducts.push(newProduct);
-    showNotification('Product added successfully!');
-    
-    // Clear form
-    document.getElementById('product-name').value = '';
-    document.getElementById('product-description').value = '';
-    document.getElementById('product-price').value = '';
-    
-    // Update displays
-    displayProducts(allProducts);
-    loadAdminData();
-}
-
-function loadAdminData() {
-    const adminProductsList = document.getElementById('admin-products-list');
-    if (adminProductsList) {
-        adminProductsList.innerHTML = allProducts.map(product => `
-            <div class="product-item" data-product-id="${product._id}">
-                <div>
-                    <h4>${product.name}</h4>
-                    <p>₹${product.price} • ${product.category}</p>
-                </div>
-                <button class="btn delete-product-btn" data-product-id="${product._id}">Delete</button>
-            </div>
-        `).join('');
-    }
-    
-    // Load orders for admin
-    const adminOrdersList = document.getElementById('admin-orders-list');
-    if (adminOrdersList) {
-        const orders = JSON.parse(localStorage.getItem('orders')) || [];
-        adminOrdersList.innerHTML = orders.length > 0 ? orders.map(order => `
-            <div class="product-item">
-                <div>
-                    <h4>Order ${order.orderId || 'N/A'}</h4>
-                    <p>Customer: ${order.customerName} • Total: ₹${order.totalAmount}</p>
-                    <p>Payment: ${order.paymentMethod} • Date: ${new Date(order.orderDate).toLocaleDateString()}</p>
-                </div>
-            </div>
-        `).join('') : '<p>No orders yet.</p>';
-    }
-}
-
-function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        allProducts = allProducts.filter(p => String(p._id) !== String(productId));
-        loadAdminData();
-        displayProducts(allProducts);
-        showNotification('Product deleted!');
-    }
-}
-
 // ==================== PRODUCT DISPLAY ====================
 function displayProducts(products) {
     const container = document.getElementById('products-container');
     if (!container) return;
     
     container.innerHTML = products.map(product => `
-        <div class="product-card">
-            <img src="${product.images[0]}" alt="${product.name}" class="product-image" data-product-image="true">
+        <div class="product-card" data-category="${product.category}">
+            <div class="product-image-container">
+                <img src="${product.images[0]}" alt="${product.name}" class="product-image" data-product-image="true" onerror="this.src='https://via.placeholder.com/300x400/1a1a1a/d4af37?text=${encodeURIComponent(product.name)}'">
+                <div class="product-overlay">
+                    <button class="btn view-details-btn" data-product-id="${product._id}">Quick View</button>
+                </div>
+            </div>
             <div class="product-info">
+                <div class="product-category-badge">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</div>
                 <h3 class="product-title">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
-                <p class="product-price">₹${product.price}</p>
+                <div class="product-features">
+                    <span class="size-badge">${product.sizes.join(', ')}</span>
+                    <span class="color-badge">${product.colors.length} colors</span>
+                </div>
+                <div class="product-price-section">
+                    <p class="product-price">₹${product.price.toLocaleString()}</p>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-text">(4.5)</span>
+                    </div>
+                </div>
                 <div class="product-actions">
-                    <button class="btn add-to-cart-btn" data-product-id="${product._id}">Add to Cart</button>
-                    <button class="wishlist-btn"><i class="far fa-heart"></i></button>
+                    <button class="btn add-to-cart-btn" data-product-id="${product._id}">
+                        <i class="fas fa-shopping-bag"></i>
+                        Add to Cart
+                    </button>
+                    <button class="wishlist-btn" title="Add to Wishlist">
+                        <i class="far fa-heart"></i>
+                    </button>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
+
+
 function filterProducts(category) {
     const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
     displayProducts(filtered);
     
-    // Update active filter button
+    // Update active filter button with smooth animation
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-category') === category) {
             btn.classList.add('active');
         }
     });
+    
+    // Add smooth scroll to products
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // ==================== UTILITY FUNCTIONS ====================
@@ -754,12 +694,6 @@ function setupEventDelegation() {
         if (target.classList.contains('remove-btn')) {
             const productId = target.getAttribute('data-product-id');
             removeFromCart(productId);
-        }
-        
-        // Delete product buttons in admin
-        if (target.classList.contains('delete-product-btn')) {
-            const productId = target.getAttribute('data-product-id');
-            deleteProduct(productId);
         }
         
         // Product images for modal
@@ -826,25 +760,9 @@ function setupEventListeners() {
     const continueShopping = document.getElementById('continue-shopping');
     if (continueShopping) continueShopping.addEventListener('click', () => showSection('home'));
 
-    // Admin login
-    const adminLoginBtn = document.getElementById('admin-login-btn');
-    if (adminLoginBtn) adminLoginBtn.addEventListener('click', adminLogin);
-
-    // Close admin modal
-    const closeAdminModalBtn = document.getElementById('close-admin-modal');
-    if (closeAdminModalBtn) closeAdminModalBtn.addEventListener('click', closeAdminModal);
-
     // Close image modal
     const closeImageModalBtn = document.getElementById('close-image-modal');
     if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', closeModal);
-
-    // Back to store from admin
-    const backToStoreBtn = document.getElementById('back-to-store-btn');
-    if (backToStoreBtn) backToStoreBtn.addEventListener('click', () => showSection('home'));
-
-    // Add product button
-    const addProductBtn = document.getElementById('add-product-btn');
-    if (addProductBtn) addProductBtn.addEventListener('click', addProduct);
 
     // Shop now button
     const shopNowBtn = document.getElementById('shop-now-btn');
@@ -873,8 +791,7 @@ function setupEventListeners() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const section = this.getAttribute('data-section');
-            if (section === 'admin-login') showAdminLogin();
-            else showSection(section);
+            showSection(section);
         });
     });
 
@@ -957,7 +874,6 @@ function init() {
     updateCartCount();
     showSection('home');
 }
-
 
 // Start everything when page loads
 document.addEventListener('DOMContentLoaded', init);
